@@ -4,6 +4,10 @@
 This software is licensed under the terms of the Apache Licence Version 2.0
 which can be obtained at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
+This repository contains a copy of [SABER](https://github.com/jcsda/saber) and adds the necessary CMakeLists.txt file to compile a bundle using [ecbuild](https://github.com/ecmwf/ecbuild). The goal is to keep a separate archive of the SABER code able to reproduce illustrations and tests needed for an article about the NICAS method.
+
+**Please do not use this code for other purposes, since it will not be updated.**
+
 To compile and run SABER:
 - Install [ecbuild](https://github.com/ecmwf/ecbuild) and add it in your PATH.
 - Run the following bash script:
@@ -24,6 +28,6 @@ ecbuild ${SABER_SRC}
 # Go to the saber directory
 cd saber
 
-# Run tests specific for the NICAS article
+# Run test (only the ones needed for the NICAS article)
 ctest -R doc
 ```
