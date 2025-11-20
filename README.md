@@ -4,9 +4,12 @@
 This software is licensed under the terms of the Apache Licence Version 2.0
 which can be obtained at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-This repository contains a copy of [SABER](https://github.com/jcsda/saber) and adds the necessary CMakeLists.txt file to compile a bundle using [ecbuild](https://github.com/ecmwf/ecbuild). The goal is to keep a separate archive of the SABER code able to reproduce illustrations and tests needed for an article about the NICAS method.
+The goal of this repository is to keep an archive of the code and scripts required to reproduce the results and illustrations used in an article about the NICAS method. **Please do not use the SABER code of this repository for other purposes, since it will not be updated!**
 
-**Please do not use this code for other purposes, since it will not be updated.**
+This repository contains:
+- an archive  of [SABER](https://github.com/jcsda/saber),
+- the necessary CMakeLists.txt file to compile a bundle using [ecbuild](https://github.com/ecmwf/ecbuild),
+- an archive of the data and Python script required to generate the illustrations of the article.
 
 To compile and run SABER:
 - Install [ecbuild](https://github.com/ecmwf/ecbuild) and add it in your PATH.

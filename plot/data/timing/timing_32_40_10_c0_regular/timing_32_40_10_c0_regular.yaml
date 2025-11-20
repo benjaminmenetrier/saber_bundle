@@ -1,0 +1,49 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: octahedral_gaussian
+    N: 600
+  groups:
+  - variables:
+    - air_temperature
+  interpolation:
+    interpolation type: atlas interpolation wrapper
+background:
+  date: 2025-08-04T00:00:00Z
+  state variables:
+  - air_temperature
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      general:
+        testing: true
+        default seed: 0
+        timers: true
+        universe length-scale: 994162.5606326943
+      drivers:
+        multivariate strategy: univariate
+        compute nicas: true
+      nicas:
+        grid type: regular
+        resolution: 10
+        explicit length-scales: true
+        horizontal length-scale:
+        - groups:
+          - air_temperature
+          value: 662775.0404217961
+        vertical length-scale:
+        - groups:
+          - air_temperature
+          value: 1.0
+        interpolation type:
+        - groups:
+          - air_temperature
+          type: c0
+        smooth interpolation factor: 0.8
+        smooth interpolation scaling: true
+        setup timings: 10
+        application timings: 100
+test:
+  reference filename: ../timing.ref

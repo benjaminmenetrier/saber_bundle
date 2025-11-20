@@ -1,0 +1,9 @@
+Info     :        nicas_setup_sampling          :    11 /      894.100 /      960.200 /      926.900 /      928.700
+Info     :        nicas_setup_interp            :    11 /     2632.700 /     2747.800 /     2704.482 /     2711.500
+Info     :        nicas_setup_convol            :    11 /      271.800 /      282.800 /      276.918 /      276.100
+Info     :        nicas_setup_norm              :    11 /     1084.800 /     1248.700 /     1118.373 /     1111.400
+Info     :        nicas_apply_interp_lin        :  2000 /       16.100 /       34.500 /       17.482 /       17.400
+Info     :        nicas_apply_interp_com        :  2000 /        0.000 /        2.400 /        0.043 /        0.000
+Info     :        nicas_apply_convol_sqrt_lin   :  2000 /        0.100 /        1.300 /        0.316 /        0.400
+Info     :        nicas_apply_convol_sqrt_com   :  2000 /        0.000 /        0.200 /        0.035 /        0.000
+Info     :        nicas_apply_norm              :  2000 /        0.200 /        1.100 /        0.265 /        0.300

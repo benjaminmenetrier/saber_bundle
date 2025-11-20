@@ -1,0 +1,83 @@
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] -  This is the ECMWF jobfilter
+[ECMWF-INFO -sbatch] -  +++ Please report issues using the Support portal +++
+[ECMWF-INFO -sbatch] -  +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -sbatch] -  /usr/local/bin/ecsbatch: size: 53018, mtime: Wed Jul 23 12:12:48 2025
+[ECMWF-INFO -sbatch] - -------------------------------------------------------------------------------------
+[ECMWF-INFO -sbatch] - Time at submit: Fri Aug 22 13:04:04 2025 (1755867844.851056) on ac6-100.bullx:/etc/ecmwf/nfs/dh2_perm_b/sbbm/jedi-run
+[ECMWF-INFO -sbatch] - --- SLURM VARIABLES ---
+[ECMWF-INFO -sbatch] - SLURM_MPI_TYPE=pmi2
+[ECMWF-INFO -sbatch] - EC_CLUSTER=ac
+[ECMWF-INFO -sbatch] - SLURM_EXPORT_ENV=ALL
+[ECMWF-INFO -sbatch] - SBATCH_EXPORT=NONE
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - jobscript: /etc/ecmwf/nfs/dh2_perm_b/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular.sh
+[ECMWF-INFO -sbatch] - --- SCRIPT OPTIONS ---
+[ECMWF-INFO -sbatch] - #SBATCH --job-name=timing_32_30_10_c0_regular
+[ECMWF-INFO -sbatch] - #SBATCH --output=/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-%J.out
+[ECMWF-INFO -sbatch] - #SBATCH --error=/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-%J.out
+[ECMWF-INFO -sbatch] - #SBATCH --qos=np
+[ECMWF-INFO -sbatch] - #SBATCH --time=01:00:00
+[ECMWF-INFO -sbatch] - #SBATCH --account=nores
+[ECMWF-INFO -sbatch] - #SBATCH --nodes=1
+[ECMWF-INFO -sbatch] - #SBATCH --ntasks=32
+[ECMWF-INFO -sbatch] - #SBATCH --cpus-per-task=1
+[ECMWF-INFO -sbatch] - -----------------------
+[ECMWF-INFO -sbatch] - --- POST-PROCESSED OPTIONS ---
+[ECMWF-INFO -sbatch] - ARG --positional=['/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular.sh']
+[ECMWF-INFO -sbatch] - ARG --account=nores
+[ECMWF-INFO -sbatch] - ARG --cpus_per_task=1
+[ECMWF-INFO -sbatch] - ARG --error=/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-%J.out
+[ECMWF-INFO -sbatch] - ARG --job_name=timing_32_30_10_c0_regular
+[ECMWF-INFO -sbatch] - ARG --ntasks=32
+[ECMWF-INFO -sbatch] - ARG --nodes=1
+[ECMWF-INFO -sbatch] - ARG --output=/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-%J.out
+[ECMWF-INFO -sbatch] - ARG --qos=np
+[ECMWF-INFO -sbatch] - ARG --time=01:00:00
+[ECMWF-INFO -sbatch] - ------------------------------
+[ECMWF-INFO -sbatch] - jobtag: sbbm-timing_32__c0_regular-1x256-/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-_.out
+[ECMWF-INFO -sbatch] - ['/usr/bin/sbatch', '--account=nores', '--cpus-per-task=1', '--error=/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-%J.out', '--job-name=timing_32_30_10_c0_regular', '--ntasks=32', '--nodes=1', '--output=/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-%J.out', '--qos=np', '--time=01:00:00', '--licenses=h2resw01', '--export=EC_user_time_limit=01:00:00', '/etc/ecmwf/nfs/dh2_perm_b/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular.sh']
+[ECMWF-INFO -sbatch] - sbatch executed on ac
+[ECMWF-INFO -sbatch] - Job queued on ac using method local
+[ECMWF-INFO -sbatch] - Submitted batch job 39571575
+[ECMWF-INFO -ecprofile] /usr/bin/bash NON_INTERACTIVE on ac1-2049 at 20250822_130438.876, PID: 2679090, JOBID: 39571575
+[ECMWF-INFO -ecprofile] $SCRATCH=/ec/res4/scratch/sbbm
+[ECMWF-INFO -ecprofile] $PERM=/perm/sbbm
+[ECMWF-INFO -ecprofile] $HPCPERM=/ec/res4/hpcperm/sbbm
+[ECMWF-INFO -ecprofile] $TMPDIR=/dev/shm/_tmpdir_.sbbm.39571575
+[ECMWF-INFO -ecprofile] $SCRATCHDIR=/ec/res4/scratchdir/sbbm/7/39571575
+terminate called after throwing an instance of 'oops::TestReferenceMissingReferenceLineError'
+  what():  TestReference: Missing reference file line corresponding to test output Line#:0
+Test line: '       Independent levels:  1[1]'
+srun: error: ac1-2049: task 0: Aborted
+srun: Terminating StepId=39571575.0
+slurmstepd: error: *** STEP 39571575.0 ON ac1-2049 CANCELLED AT 2025-08-22T13:05:41 ***
+srun: error: ac1-2049: tasks 1-31: Terminated
+srun: Force Terminated StepId=39571575.0
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] This is the ECMWF job Epilogue
+[ECMWF-INFO -ecepilog] +++ Please report issues using the Support portal +++
+[ECMWF-INFO -ecepilog] +++ https://support.ecmwf.int                     +++
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+[ECMWF-INFO -ecepilog] Run at 2025-08-22T13:05:42 on ac
+[ECMWF-INFO -ecepilog] JobName                   : timing_32_30_10_c0_regular
+[ECMWF-INFO -ecepilog] JobID                     : 39571575
+[ECMWF-INFO -ecepilog] Submit                    : 2025-08-22T13:04:04
+[ECMWF-INFO -ecepilog] Start                     : 2025-08-22T13:04:15
+[ECMWF-INFO -ecepilog] End                       : 2025-08-22T13:05:42
+[ECMWF-INFO -ecepilog] QueuedTime                : 11.0
+[ECMWF-INFO -ecepilog] ElapsedRaw                : 87
+[ECMWF-INFO -ecepilog] ExitCode                  : 0:0
+[ECMWF-INFO -ecepilog] DerivedExitCode           : 0:6
+[ECMWF-INFO -ecepilog] State                     : COMPLETED
+[ECMWF-INFO -ecepilog] Account                   : nores
+[ECMWF-INFO -ecepilog] QOS                       : np
+[ECMWF-INFO -ecepilog] User                      : sbbm
+[ECMWF-INFO -ecepilog] StdOut                    : /home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-39571575.out
+[ECMWF-INFO -ecepilog] StdErr                    : /home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-39571575.out
+[ECMWF-INFO -ecepilog] NNodes                    : 1
+[ECMWF-INFO -ecepilog] NCPUS                     : 256
+[ECMWF-INFO -ecepilog] SBU                       : 52.784
+[ECMWF-INFO -ecepilog] jobtag                    : sbbm-timing_32__c0_regular-1x256-/home/sbbm/jedi-run/timing_32_30_10_c0_regular/timing_32_30_10_c0_regular-_JOBID_.out
+[ECMWF-INFO -ecepilog] ----------------------------------------------------------------------------------------------------
+

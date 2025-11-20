@@ -1,0 +1,806 @@
+OOPS Starting 2025-09-12 13:14:11 (UTC+0000)
+[TestReference] Comparing to reference file: ../timing.ref
+Relative float tolerance for tests : 1e-06
+Absolute float tolerance for tests : 0
+Configuration input file is: timing_32_30_10_c0_regular.yaml
+Full configuration is:YAMLConfiguration[path=timing_32_30_10_c0_regular.yaml, root={geometry => {function space => StructuredColumns , grid => {type => octahedral_gaussian , N => 600} , groups => ({variables => (air_temperature)}) , interpolation => {interpolation type => atlas interpolation wrapper}} , background => {date => 2025-08-04T00:00:00Z , state variables => (air_temperature)} , background error => {covariance model => SABER , saber central block => {saber block name => BUMP_NICAS , calibration => {general => {testing => true , default seed => 0 , timers => true , universe length-scale => 745622} , drivers => {multivariate strategy => univariate , compute nicas => true} , nicas => {grid type => regular , resolution => 10 , explicit length-scales => true , horizontal length-scale => ({groups => (air_temperature) , value => 497081}) , vertical length-scale => ({groups => (air_temperature) , value => 1}) , interpolation type => ({groups => (air_temperature) , type => c0}) , smooth interpolation factor => 0.8 , smooth interpolation scaling => true , setup timings => 10 , application timings => 100}}}} , test => {reference filename => ../timing.ref}}]
+OOPS_STATS ObjectCountHelper started.
+OOPS_STATS Run start                                - Runtime:      1.82 sec,  Memory: total:     4.55 Gb, per task: min =   141.00 Mb, max =   142.82 Mb
+Run: Starting oops::ErrorCovarianceToolbox<quench>
+Info     : Quench geometry grid:
+Info     : - name: O600
+Info     : - size: 1461600
+Info     : Partitioner:
+Info     : - type: equal_regions
+Info     : Function space:
+Info     : - type: StructuredColumns
+Info     : - halo: 0
+Info     : Groups: 
+Info     : - Group 0:
+Info     :   Vertical levels: 
+Info     :   - number: 1
+Info     :   - vertCoord: [1]
+Info     :   Mask size: 100%
+Info     : Create empty state
+Info     : Prepare ensemble configuration
+Info     : Read full ensemble
+Info     : Creating central block: BUMP_NICAS
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : +++ MPI tasks:      32
+Info     : +++ OpenMP threads: 1
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : +++ Create BUMP instance 1 / 1
+Info     : -------------------------------------------------------------------
+Info     : --- Parallelization with  32 MPI tasks and  1 OpenMP threads
+Info     : -------------------------------------------------------------------
+Info     : --- Missing values
+Info     :     Real:    -0.33347671E+39
+Info     :     Integer:   -999
+Info     : -------------------------------------------------------------------
+Info     : --- Configuration parameters
+Info     :        General:{"color log":false,"testing":true,"default seed":0,"reproducibility operators":true,"reproducibility threshold":9.9999999999999998e-13,"timers":true,"universe length-scale":745621.92047452065,"deprecated hull":true,"deprecated work grid":false}
+Info     :        I/O:{"data directory":".","files prefix":"","new files":true,"parallel netcdf":true,"io tasks":20,"alias":[],"overriding sampling file":"","overriding vertical covariance file":[],"overriding vertical balance file":"","overriding moments file":[],"overriding lowres moments file":[],"overriding universe radius file":"","overriding nicas file":"","overriding psichitouv file":"","gsi data file":"","gsi namelist":""}
+Info     :        Drivers:{"compute covariance":false,"compute lowres covariance":false,"compute correlation":false,"compute lowres correlation":false,"compute localization":false,"compute lowres localization":false,"compute hybrid weights":false,"hybrid source":"","multivariate strategy":"univariate","compute normality":false,"read local sampling":false,"read global sampling":false,"write local sampling":false,"write global sampling":false,"write sampling grids":false,"compute vertical covariance":false,"read vertical covariance":false,"write vertical covariance":false,"compute vertical balance":false,"read vertical balance":false,"write vertical balance":false,"compute variance":false,"compute moments":false,"read moments":false,"write moments":false,"write diagnostics":false,"write diagnostics detail":false,"read universe radius":false,"write universe radius":false,"compute nicas":true,"read local nicas":false,"read global nicas":false,"write local nicas":false,"write global nicas":false,"write nicas grids":false,"write nicas steps":false,"compute psichitouv":false,"read local psichitouv":false,"read global psichitouv":false,"write local psichitouv":false,"write global psichitouv":false,"vertical balance inverse test":false,"adjoints test":false,"normalization test":0,"internal dirac test":false,"randomization test":false,"internal consistency test":false,"localization optimality test":false,"interpolate from gsi data":false}
+Info     :        Model:{"level for 2d variables":"first","variables":["air_temperature"],"2d variables":["air_temperature"],"do not cross mask boundaries":false,"nl0":1}
+Info     :        Ensemble sizes:{"total ensemble size":0,"sub-ensembles":1,"total lowres ensemble size":0,"lowres sub-ensembles":1}
+Info     :        Sampling:{"computation grid size":0,"diagnostic grid size":0,"distance classes":0,"angular sectors":1,"distance class width":0,"reduced levels":0,"local diagnostic":false,"averaging length-scale":0,"averaging latitude width":0,"max number of draws":10000,"interpolation type":"c0","masks":[],"contiguous levels threshold":0}
+Info     :        diagnostics:{"target ensemble size":0,"target lowres ensemble size":0,"gaussian approximation":false,"localization option":"default","generalized kurtosis threshold":1.7976931348623157e+308,"histogram bins":0,"diagnosed lengths scaling":1}
+Info     :        Vertical balance:{"vbal":[],"pseudo inverse":false,"dominant mode":0,"variance threshold":0,"identity blocks":false}
+Info     :        Variance:{"explicit stddev":false,"stddev":[],"objective filtering":false,"filtering iterations":-1,"filtering passes":-1,"initial length-scale":[],"smoother resolution":5}
+Info     :        Optimality test:{"half number of factors":1,"factors increment":0.050000000000000003,"test vectors":10}
+Info     :        Fit:{"raw diagnostic lower threshold":-1.7976931348623157e+308,"horizontal filtering length-scale":0,"vertical filtering length-scale":0,"vertical stride":1,"number of components":1}
+Info     :        Local profiles:
+Info     :        NICAS:{"resolution":10,"grid type":"regular","explicit length-scales":true,"horizontal length-scale":[{"groups":["air_temperature"],"value":497081.28031634714}],"vertical length-scale":[{"groups":["air_temperature"],"value":1}],"default off-diagonal weight":0,"specific off-diagonal weights":[],"default interpolation type":"c0","interpolation type":[{"groups":["air_temperature"],"type":"c0"}],"smooth interpolation factor":0.80000000000000004,"normalization randomization size":0,"positive-definiteness test":false,"horizontal interpolation test":false,"overriding component in file":0,"same horizontal convolution":false,"similar levels threshold":0,"interpolation in global file":false,"setup timings":10,"application timings":100}
+Info     :        Psichitouv:{"dipole test":false}
+Info     :        Dirac:
+Info     : -------------------------------------------------------------------
+Info     : --- Check namelist parameters
+Info     : -------------------------------------------------------------------
+Info     : --- Set I/O parameters
+Info     : -------------------------------------------------------------------
+Info     : --- Set reproducibility parameters
+Info     : -------------------------------------------------------------------
+Info     : --- Initialize random number generator
+Info     :        Linear congruential generator initialized
+Info     : -------------------------------------------------------------------
+Info     : --- Initialize geometry
+Info     :        Setup subset Sc0
+Info     :        Setup universe
+Info     :           Task      1:   0.00%
+Info     :           Task      2:   0.00%
+Info     :           Task      3:   0.00%
+Info     :           Task      4:   0.00%
+Info     :           Task      5:   0.00%
+Info     :           Task      6:   0.00%
+Info     :           Task      7:   0.00%
+Info     :           Task      8:   0.00%
+Info     :           Task      9:   0.00%
+Info     :           Task     10:   0.00%
+Info     :           Task     11:   0.00%
+Info     :           Task     12:   0.00%
+Info     :           Task     13:   0.00%
+Info     :           Task     14:   0.00%
+Info     :           Task     15:   0.00%
+Info     :           Task     16:   0.00%
+Info     :           Task     17:   0.00%
+Info     :           Task     18:   0.00%
+Info     :           Task     19:   0.00%
+Info     :           Task     20:   0.00%
+Info     :           Task     21:   0.00%
+Info     :           Task     22:   0.00%
+Info     :           Task     23:   0.00%
+Info     :           Task     24:   0.00%
+Info     :           Task     25:   0.00%
+Info     :           Task     26:   0.00%
+Info     :           Task     27:   0.00%
+Info     :           Task     28:   0.00%
+Info     :           Task     29:   0.00%
+Info     :           Task     30:   0.00%
+Info     :           Task     31:   0.00%
+Info     :           Task     32:   0.00%
+Info     :           Communicate data from halo A to universe on subset Sc0
+Info     :        Check that Sc0 points in universe are not duplicated
+Info     :        Setup tree
+Info     :        Setup hulls
+Info     :        Setup grid properties
+Test     :        Independent levels:  1[1]
+Info     :        Setup horizontal distance
+Info     :        Setup angular sector
+Info     :        Geometry summary:
+Info     :           Model grid size:          1461600
+Test     :           Subset Sc0 size:          1461600
+Info     :           Number of duplicated points (halo):         0 (  0.00%)
+Test     :           Domain area (% of Earth area): 0.100E+03%
+Info     :           Valid points (% of total domain):
+Test     :              Level   1 ~> 100.0%
+Info     :           Vertical coordinate:
+Test     :              Level   1 ~>  0.100E+01 vert. coord.
+Info     :           Distribution (local / universe):
+Info     :              Task      1:    45675 /   319725
+Info     :              Task      2:    45675 /   319725
+Info     :              Task      3:    45675 /   319725
+Info     :              Task      4:    45675 /   319725
+Info     :              Task      5:    45675 /   319725
+Info     :              Task      6:    45675 /   319725
+Info     :              Task      7:    45675 /   319725
+Info     :              Task      8:    45675 /   365400
+Info     :              Task      9:    45675 /   365400
+Info     :              Task     10:    45675 /   365400
+Info     :              Task     11:    45675 /   365400
+Info     :              Task     12:    45675 /   365400
+Info     :              Task     13:    45675 /   365400
+Info     :              Task     14:    45675 /   365400
+Info     :              Task     15:    45675 /   365400
+Info     :              Task     16:    45675 /   365400
+Info     :              Task     17:    45675 /   365400
+Info     :              Task     18:    45675 /   365400
+Info     :              Task     19:    45675 /   365400
+Info     :              Task     20:    45675 /   365400
+Info     :              Task     21:    45675 /   365400
+Info     :              Task     22:    45675 /   365400
+Info     :              Task     23:    45675 /   365400
+Info     :              Task     24:    45675 /   365400
+Info     :              Task     25:    45675 /   365400
+Info     :              Task     26:    45675 /   319725
+Info     :              Task     27:    45675 /   319725
+Info     :              Task     28:    45675 /   319725
+Info     :              Task     29:    45675 /   319725
+Info     :              Task     30:    45675 /   319725
+Info     :              Task     31:    45675 /   319725
+Info     :              Task     32:    45675 /   319725
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : +++ End of BUMP creation
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : Direct calibration
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : +++ Run drivers for BUMP instance 1 / 1
+Info     : -------------------------------------------------------------------
+Info     : --- Copy namelist support radii into C matrix, ensemble 1
+Info     :        Copy namelist radii into C matrix
+Info     : -------------------------------------------------------------------
+Info     : --- Setup C matrix sampling, ensemble 1
+Info     :        Group air_temperature:
+Info     : -------------------------------------------------------------------
+Info     : --- Run NICAS driver
+Info     :        Ensemble 1
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Run NICAS tests driver
+Info     :        Ensemble 1
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : -------------------------------------------------------------------
+Info     : --- Copy and filter C matrix data
+Info     : -------------------------------------------------------------------
+Info     : --- Compute NICAS parameters
+Info     : --- Block: air_temperature
+Info     :        Component: 1
+Info     :           Compute adaptive sampling, vertical
+Info     :              Compute vertical subset L1
+Test     :              Effective levels:   1 
+Info     :           Compute adaptive sampling, horizontal
+Info     :              Sublevel   1/  1 (level   1):
+Info     :                 Compute horizontal subset Sc1:
+Test     :                    Requested distance between points (min/max/avg):  0.497E+02 km /  0.497E+02 km /  0.497E+02 km
+Test     :                    Regular sampling grid size:   162328 points
+Test     :                    Nearest neighbor distance (min/max/avg):  0.122E+02 km /  0.619E+02 km /  0.534E+02 km
+Test     :                    Effective resolution (min/max/avg):  8.02 / 40.91 /  9.34
+Test     :                    Subgrid hash:   -494700025
+Test     :                 Subgrid size:   162328
+Info     :                 Compute halo A and universe conversions and communication for subset Sc1
+Info     :                 Get global lon/lat
+Info     :                 Compute interpolation from subset Sc1 to subset Sc0, type c0
+Info     :                 Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Compute interpolation from subset Sc0 to subset Sc1
+Info     :                    Compute interpolation: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :                 Define halo B, compute conversions and communications for subset Sc1
+Info     :                 Define halo B, compute conversions and communications for subset Sc0
+Info     :              Define subgrid, conversions and communication
+Info     :           Compute convolution data
+Info     :              Compute horizontal and vertical parameters
+Info     :                 Sublevel   1:
+Info     :                    Interpolate fields on convolution grid
+Info     :                    Communication field on halo B
+Info     :              Count and find nearest neighbors, compute distances: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :              Compute weights: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Compute internal normalization
+Info     :           Compute normalization
+Info     :              Level   1: 0% 5% 10% 15% 20% 25% 30% 35% 40% 45% 50% 55% 60% 65% 70% 75% 80% 85% 90% 95% 100%
+Info     :           Parameters for processor #     1
+Info     :              nc0 =                         1461600
+Info     :              nc0a =                          45675
+Info     :              nl0 =                               1
+Test     :              nc1(  1) =                     162328
+Test     :              ns =                           162328
+Info     :              nsa =                            5472
+Info     :              nsb =                            5684
+Info     :              nsc =                            6344
+Info     :              Interp. type =                     c0
+Info     :              interp_c1b_to_c0a(  1)%n_s =   133825
+Test     :              v%n_s =                             1
+Info     :              c%n_s[local] =                 306968
+Test     :              c%n_s[global] =               9759832
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : +++ End of BUMP drivers
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : Write calibration data
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : +++ Terminate BUMP instance 1 / 1
+Info     : -------------------------------------------------------------------
+Info     : --- NetCDF I/O report
+Info     :        Number of opened files:   0
+Info     :        Number of closed files:   0
+Info     :        Registry status:   0
+Info     : -------------------------------------------------------------------
+Info     : --- Internal timers (# / min / max / mean / median, in ms)
+Info     :        nicas_setup_sampling          :    11 /     2184.100 /     2210.600 /     2198.064 /     2198.900
+Info     :        nicas_setup_interp            :    11 /     7023.400 /     7220.600 /     7140.591 /     7159.000
+Info     :        nicas_setup_convol            :    11 /     1187.200 /     1242.100 /     1221.709 /     1226.400
+Info     :        nicas_setup_norm              :    11 /     2164.000 /     2244.200 /     2211.155 /     2220.300
+Info     :        nicas_apply_interp_lin        :  2000 /       15.800 /       39.600 /       16.957 /       17.200
+Info     :        nicas_apply_interp_com        :  2000 /        0.000 /        6.200 /        0.078 /        0.000
+Info     :        nicas_apply_convol_sqrt_lin   :  2000 /        0.800 /       10.100 /        1.418 /        1.800
+Info     :        nicas_apply_convol_sqrt_com   :  2000 /        0.000 /        0.500 /        0.052 /        0.100
+Info     :        nicas_apply_norm              :  2000 /        0.200 /        1.100 /        0.268 /        0.300
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Info     : +++ All BUMP instances terminated
+Info     : +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Run: Finishing oops::ErrorCovarianceToolbox<quench>
+OOPS_STATS  
+OOPS_STATS ----------------------------------------------------------------------------------
+OOPS_STATS --------------------------- Object counts ----------------------------------------
+OOPS_STATS ----------------------------------------------------------------------------------
+OOPS_STATS                                      Total  Simult. Remain    Avg (Mb)    HWM (Mb)
+OOPS_STATS oops::Geometry                  :        1       1        
+OOPS_STATS oops::State                     :        1       1                0.37        0.37
+OOPS_STATS quench::Fields                  :        1       1        
+OOPS_STATS quench::Geometry                :        2       2        
+OOPS_STATS quench::State                   :        1       1        
+OOPS_STATS saber::ErrorCovariance          :        1       1        
+OOPS_STATS ----------------------------- Object counts --------------------------------------
+OOPS_STATS  
+OOPS_STATS --------------------------------------------------------------------------------------------
+OOPS_STATS ------------------------------------ Timing Statistics -------------------------------------
+OOPS_STATS --------------------------------------------------------------------------------------------
+OOPS_STATS Name                                                :   total (ms)   count    time/call (ms)
+OOPS_STATS oops::Covariance::SABER::Constructor                :         0.02       1            0.0166
+OOPS_STATS oops::Geometry::Geometry                            :       282.34       1          282.3366
+OOPS_STATS oops::Geometry::variableSizes                       :         0.00       1            0.0039
+OOPS_STATS oops::Geometry::~Geometry                           :         0.16       1            0.1621
+OOPS_STATS oops::GeometryData::setGlobalTree                   :       787.76       1          787.7605
+OOPS_STATS oops::GeometryData::setLocalTree                    :        41.80       1           41.7976
+OOPS_STATS oops::GeometryData::setMeshAndTriangulation         :       308.36       1          308.3587
+OOPS_STATS oops::Parameters::deserialize                       :         2.14       5            0.4275
+OOPS_STATS oops::Parameters::serialize                         :         3.61      58            0.0622
+OOPS_STATS oops::State::State                                  :         0.49       1            0.4925
+OOPS_STATS oops::State::toFieldSet                             :         0.03       1            0.0307
+OOPS_STATS oops::State::variables                              :         0.00       1            0.0001
+OOPS_STATS oops::State::~State                                 :         0.04       1            0.0389
+OOPS_STATS saber::ErrorCovariance::ErrorCovariance             :    180960.89       1       180960.8931
+OOPS_STATS saber::ErrorCovariance::~ErrorCovariance            :         0.00       1            0.0003
+OOPS_STATS saber::bump::NICAS::~NICAS                          :         0.00       1            0.0031
+OOPS_STATS util::Timers::Total                                 :    182487.15       1       182487.1507
+OOPS_STATS util::Timers::measured                              :    182381.91       1       182381.9130
+OOPS_STATS ------------------------------------ Timing Statistics -------------------------------------
+
+OOPS_STATS ------------------------------------------------------------------------------------------------------------------
+OOPS_STATS ---------------------------------- Parallel Timing Statistics (  32 MPI tasks) -----------------------------------
+OOPS_STATS ------------------------------------------------------------------------------------------------------------------
+OOPS_STATS Name                                                :     min (ms)    max (ms)    avg (ms)     % total   imbal (%)
+OOPS_STATS oops::Geometry::Geometry                            :       282.19      286.20      283.31        0.16        1.42
+OOPS_STATS oops::GeometryData::setGlobalTree                   :       753.52      832.50      802.29        0.44        9.84
+OOPS_STATS oops::GeometryData::setMeshAndTriangulation         :       308.02      308.87      308.43        0.17        0.28
+OOPS_STATS util::Timers::Total                                 :    182414.35   182487.15   182421.84      100.00        0.04
+OOPS_STATS util::Timers::measured                              :    182295.28   182381.91   182299.98       99.93        0.05
+OOPS_STATS ---------------------------------- Parallel Timing Statistics (  32 MPI tasks) -----------------------------------
+
+OOPS_STATS Run end                                  - Runtime:    184.30 sec,  Memory: total:    24.96 Gb, per task: min =   755.10 Mb, max =  1127.61 Mb
+Run: Finishing oops::ErrorCovarianceToolbox<quench> with status = 0
