@@ -17,6 +17,8 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/exception/Exceptions.h"
+
 #include "oops/base/FieldSets.h"
 #include "oops/util/ConfigFunctions.h"
 #include "oops/util/FieldSetHelpers.h"
@@ -103,8 +105,7 @@ BUMP::BUMP(const oops::GeometryData & geometryData,
 
   // Check grids number
   if (grids.size() == 0) {
-    oops::Log::info() << "BUMP: grid size is zero" << std::endl;
-    std::abort();
+    throw eckit::Exception("BUMP: grid size is zero", Here());
   }
 
   // Loop over grids
@@ -132,53 +133,68 @@ BUMP::BUMP(const oops::GeometryData & geometryData,
       grid.set("model.variables", vars_str);
     }
 
-    // Get the number of levels and the 2D variables
+    // Get the number of levels and potential 2D variables
     int nl0 = 0;
     std::vector<std::string> var2d;
     for (const auto & var : vars_str) {
-      bool varFound = false;
-      for (size_t jvar = 0; jvar < vars_.size(); ++jvar) {
-        if (var == vars_[jvar].name()) {
-          varFound = true;
-          int nl0_tmp = static_cast<int>(vars_[var].getLevels());
-          if (nl0 > 1) {
-            // Check that nl0_tmp is either 1 or nl0
-            if ((nl0_tmp != 1) && (nl0_tmp != nl0)) {
-             oops::Log::info() << "BUMP::BUMP: inconsistent number of levels in BUMP" << std::endl;
-              std::abort();
-            }
-          }
-          nl0 = std::max(nl0, nl0_tmp);
-
-          // 2D variable flag
-          if (nl0_tmp == 1) {
-            var2d.push_back(var);
-          }
+      ASSERT(vars_.has(var));
+      int nl0_tmp = static_cast<int>(vars_[var].getLevels());
+      if (nl0 > 1) {
+        // Check that nl0_tmp is either 1 or nl0
+        if ((nl0_tmp != 1) && (nl0_tmp != nl0)) {
+          throw eckit::Exception("BUMP::BUMP: inconsistent number of levels in BUMP", Here());
         }
       }
-      if (!varFound) {
-        oops::Log::info() << "BUMP: inconsistent variable names" << std::endl;
-        std::abort();
+      nl0 = std::max(nl0, nl0_tmp);
+
+      if (nl0_tmp == 1) {
+        // Potential 2D variable
+        var2d.push_back(var);
       }
     }
     grid.set("model.nl0", nl0);
+
+    // 2D variables are meaningful if 3D variables are present only
+    if (nl0 == 1) {
+      var2d.clear();
+    }
     grid.set("model.2d variables", var2d);
 
-    // Add level index for 2D fields
-    if (!grid.has("model.level for 2d variables")) {
-      ModelDef def;
-      grid.set("model.level for 2d variables", def.lev2d.second);
+    // Add nearest 3D level for 2D fields
+    std::string nearest3dLevel;
+    if (grid.has("model.nearest 3d level")) {
+      nearest3dLevel = grid.getString("model.nearest 3d level");
     }
+    for (const auto & var : var2d) {
+      if (xb.has(var)) {
+        if (xb[var].metadata().has("nearest 3d level")) {
+          const std::string value = xb[var].metadata().getString("nearest 3d level");
+          if (nearest3dLevel.empty()) {
+            nearest3dLevel = value;
+          } else {
+            ASSERT(value == nearest3dLevel);
+          }
+        }
+      }
+    }
+    ASSERT(nearest3dLevel == "" || nearest3dLevel == "bottom" || nearest3dLevel == "top");
+    grid.set("model.nearest 3d level", nearest3dLevel);
+
+    // Add levels direction
+    grid.set("model.levels direction", geometryData.levelsAreTopDown());
 
     // Add vertical coordinate name
     std::string vertCoordName;
     for (const auto & var : vars_str) {
       if (var2d.size() == vars_str.size() || vars_[var].getLevels() > 1) {
         const std::string key = var + ".vert_coord";
-        if (vertCoordName.empty()) {
-          vertCoordName = fieldsMetaData.getString(key, "");
-        } else {
-          ASSERT(fieldsMetaData.getString(key, "vert_coord") == vertCoordName);
+        if (fieldsMetaData.has(key)) {
+          const std::string value = fieldsMetaData.getString(key);
+          if (vertCoordName.empty()) {
+            vertCoordName = value;
+          } else {
+            ASSERT(value == vertCoordName);
+          }
         }
       }
     }
@@ -192,10 +208,13 @@ BUMP::BUMP(const oops::GeometryData & geometryData,
     for (const auto & var : vars_str) {
       if (var2d.size() == vars_str.size() || vars_[var].getLevels() > 1) {
         const std::string key = var + ".gmask";
-        if (gmaskName.empty()) {
-          gmaskName = fieldsMetaData.getString(key, "");
-        } else {
-          ASSERT(fieldsMetaData.getString(key, "gmask") == gmaskName);
+        if (fieldsMetaData.has(key)) {
+          const std::string value = fieldsMetaData.getString(key);
+          if (gmaskName.empty()) {
+            gmaskName = value;
+          } else {
+            ASSERT(value == gmaskName);
+          }
         }
       }
     }
@@ -349,8 +368,7 @@ void BUMP::addField(const oops::FieldSet3D & fset) {
   // Check fset grid UID
   if (fset.size() > 0) {
     if (fset.getGridUid() != gridUid_) {
-      oops::Log::info() << "BUMP: wrong grid UID" << std::endl;
-      std::abort();
+      throw eckit::Exception("BUMP: wrong grid UID", Here());
     }
   }
 
@@ -387,14 +405,12 @@ void BUMP::addEnsemble(const oops::FieldSets & fsetEns) {
     if (dualResolutionGridUid_ == "") {
       igeom = 0;
       if (fsetEns[jj].getGridUid() != gridUid_) {
-        oops::Log::info() << "BUMP::addEnsemble: wrong grid UID" << std::endl;
-        std::abort();
+        throw eckit::Exception("BUMP::addEnsemble: wrong grid UID", Here());
       }
     } else {
       igeom = 1;
       if (fsetEns[jj].getGridUid() != dualResolutionGridUid_) {
-        oops::Log::info() << "BUMP::addEnsemble: wrong dual resolution grid UID" << std::endl;
-        std::abort();
+        throw eckit::Exception("BUMP::addEnsemble: wrong dual resolution grid UID", Here());
       }
     }
 
@@ -449,14 +465,12 @@ void BUMP::iterativeUpdate(const oops::FieldSet3D & fset,
   if (dualResolutionGridUid_ == "") {
     igeom = 0;
     if (fset.getGridUid() != gridUid_) {
-      oops::Log::info() << "BUMP::iterativeUpdate: wrong grid UID" << std::endl;
-      std::abort();
+      throw eckit::Exception("BUMP::iterativeUpdate: wrong grid UID", Here());
     }
   } else {
     igeom = 1;
     if (fset.getGridUid() != dualResolutionGridUid_) {
-      oops::Log::info() << "BUMP::iterativeUpdate: wrong dual resolution grid UID" << std::endl;
-      std::abort();
+      throw eckit::Exception("BUMP::iterativeUpdate: wrong dual resolution grid UID", Here());
     }
   }
 
