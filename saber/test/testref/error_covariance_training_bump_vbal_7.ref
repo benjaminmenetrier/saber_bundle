@@ -1,0 +1,22 @@
+       Independent levels:  1[4]
+          Subset Sc0 size:             3170
+          Domain area (% of Earth area): 0.100E+03%
+             Level   1 ~> 100.0%
+             Level   2 ~> 100.0%
+             Level   3 ~> 100.0%
+             Level   4 ~> 100.0%
+             Level   1 ~> -0.100E+01 vert. coord.
+             Level   2 ~> -0.500E+01 vert. coord.
+             Level   3 ~> -0.900E+01 vert. coord.
+             Level   4 ~> -0.110E+02 vert. coord.
+          Level   1 ~> 100.0%
+          Level   2 ~> 100.0%
+          Level   3 ~> 100.0%
+          Level   4 ~> 100.0%
+          nc2 =       89
+       Vertical balance block air_horizontal_streamfunction-air_horizontal_velocity_potential adjoint test result:  T
+       Vertical balance block air_horizontal_streamfunction-air_temperature adjoint test result:  T
+       Vertical balance block air_horizontal_streamfunction-air_pressure_at_surface adjoint test result:  T
+       Vertical balance direct adjoint test results:  T
+       Vertical balance inverse adjoint test results: T
+Norm of output parameter dirac_vbal - 1: 1.0000000000000000e+00

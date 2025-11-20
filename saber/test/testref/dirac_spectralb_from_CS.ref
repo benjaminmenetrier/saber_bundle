@@ -1,0 +1,62 @@
+Input Dirac increment:
+- Valid time: 2010-01-01T12:00:00Z
+  Geometry: CS-LFR-15 [1350]
+  Fields:
+  - eastward_wind (70 levels):
+    + min    = 0.0000000000000000e+00
+    + max    = 1.0000000000000000e+00
+    + mean   = 1.0582010582010582e-05
+    + stddev = 3.2530002431630737e-03
+  - mu (70 levels):
+    + min    = 0.0000000000000000e+00
+    + max    = 1.0000000000000000e+00
+    + mean   = 1.0582010582010582e-05
+    + stddev = 3.2530002431630737e-03
+  - northward_wind (70 levels):
+    + min    = 0.0000000000000000e+00
+    + max    = 0.0000000000000000e+00
+  - unbalanced_pressure_levels_minus_one (70 levels):
+    + min    = 0.0000000000000000e+00
+    + max    = 1.0000000000000000e+00
+    + mean   = 1.0582010582010582e-05
+    + stddev = 3.2530002431630737e-03
+Adjoint test for block gauss to cubed-sphere-dual passed
+Inner inverse test for block gauss to cubed-sphere-dual passed: U Uinv (U x) == (U x)
+Outer inverse test for block gauss to cubed-sphere-dual passed: Uinv U (Uinv x) == (Uinv x)
+Adjoint test for block spectral to gauss passed
+skipping inverse test for block spectral to gauss
+Adjoint test for block spectral covariance passed
+Covariance(SABER) diagnostics:
+- Variances at Dirac points:
+  + Value for variable eastward_wind, subwindow 0, at (longitude, latitude, vertical index) point (0.00000, 90.00000, 1): 1.0837293541259500e-01
+  + Value for variable mu, subwindow 0, at (longitude, latitude, vertical index) point (0.00000, 90.00000, 1): 1.4030796869864148e-01
+  + Value for variable unbalanced_pressure_levels_minus_one, subwindow 0, at (longitude, latitude, vertical index) point (0.00000, 90.00000, 1): 4.4332690778329811e+02
+- Covariances at diagnostic points:
+  + Value for variable mu, subwindow 0, at (longitude, latitude, vertical index) point (18.00000, 17.17204, 2): 2.6908484543329380e-05
+  + Value for variable mu, subwindow 0, at (longitude, latitude, vertical index) point (0.00000, 90.00000, 1): 1.4030796869864148e-01
+  + Value for variable unbalanced_pressure_levels_minus_one, subwindow 0, at (longitude, latitude, vertical index) point (18.00000, 17.17204, 2): -9.7301429943129474e+00
+  + Value for variable unbalanced_pressure_levels_minus_one, subwindow 0, at (longitude, latitude, vertical index) point (0.00000, 90.00000, 1): 4.4332690778329811e+02
+Covariance(SABER) * Increment:
+- Valid time: 2010-01-01T12:00:00Z
+  Geometry: CS-LFR-15 [1350]
+  Fields:
+  - eastward_wind (70 levels):
+    + min    = -1.6950395603711914e-02
+    + max    = 1.3789428419581501e-01
+    + mean   = 6.7733719184565467e-05
+    + stddev = 2.3244133309624506e-03
+  - mu (70 levels):
+    + min    = -2.3594454531481912e-03
+    + max    = 1.4030796869864148e-01
+    + mean   = 8.4438042916973582e-04
+    + stddev = 2.0813123526070656e-03
+  - northward_wind (70 levels):
+    + min    = -2.0446494279920822e-02
+    + max    = 2.0446494279920818e-02
+    + mean   ~ 0
+    + stddev = 6.1734696123340728e-04
+  - unbalanced_pressure_levels_minus_one (70 levels):
+    + min    = -1.8968016654217898e+01
+    + max    = 4.4332690778329811e+02
+    + mean   = 3.5003091748031017e-03
+    + stddev = 1.7223711423081252e+01

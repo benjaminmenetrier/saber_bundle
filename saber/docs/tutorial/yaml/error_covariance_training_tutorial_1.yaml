@@ -1,0 +1,80 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_gaussian
+    N: 50
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    levels: 1
+  halo: 1
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables:
+  - air_horizontal_streamfunction
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    read:
+      io:
+        data directory: testdata
+        files prefix: error_covariance_training_tutorial_1/_MPI_-_OMP_
+        overriding nicas file: error_covariance_training_doc_6/_MPI_-_OMP__nicas
+      drivers:
+        multivariate strategy: univariate
+        read local nicas: true
+        internal dirac test: true
+      dirac:
+      - longitude: -45.0
+        latitude: 0.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: -135.0
+        latitude: 0.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: 45.0
+        latitude: 0.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: 135.0
+        latitude: 0.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: -135.0
+        latitude: 45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: -45.0
+        latitude: 45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: 45.0
+        latitude: 45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: 135.0
+        latitude: 45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: -135.0
+        latitude: -45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: -45.0
+        latitude: -45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: 45.0
+        latitude: -45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      - longitude: 135.0
+        latitude: -45.0
+        level: 1
+        variable: air_horizontal_streamfunction
+      output model files:
+      - parameter: dirac_nicas
+        file:
+          filepath: testdata/error_covariance_training_tutorial_1/dirac_nicas

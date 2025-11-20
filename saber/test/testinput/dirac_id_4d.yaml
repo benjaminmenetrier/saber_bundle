@@ -1,0 +1,75 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_gaussian
+    N: 10
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    levels: 2
+background:
+  states:
+  - date: 2010-01-01T12:00:00Z
+    state variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+  - date: 2010-01-01T18:00:00Z
+    state variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+background error:
+  covariance model: SABER
+  randomization size: 50
+  time covariance: univariate
+  saber central block:
+    saber block name: ID
+dirac:
+  - lon:
+    - 0.0
+    lat:
+    - -0.001
+    level:
+    - 1
+    variable:
+    - air_horizontal_streamfunction
+  - {}
+diagnostic points:
+  - lon:
+    - 10.0
+    lat:
+    - -0.001
+    level:
+    - 1
+    variable:
+    - air_horizontal_streamfunction
+  - lon:
+    - 0.0
+    - 10.0
+    lat:
+    - -0.001
+    - -0.001
+    level:
+    - 1
+    - 1
+    variable:
+    - air_horizontal_streamfunction
+    - air_horizontal_streamfunction
+output dirac:
+  states:
+  - date: 2010-01-01T12:00:00Z
+    mpi pattern: '%MPI%'
+    filepath: testdata/dirac_id_4d/%MPI%_dirac_%id%
+  - date: 2010-01-01T18:00:00Z
+    mpi pattern: '%MPI%'
+    filepath: testdata/dirac_id_4d/%MPI%_dirac_%id%
+output variance:
+  states:
+  - date: 2010-01-01T12:00:00Z
+    mpi pattern: '%MPI%'
+    filepath: testdata/dirac_id_4d/%MPI%_variance_%id%
+  - date: 2010-01-01T18:00:00Z
+    mpi pattern: '%MPI%'
+    filepath: testdata/dirac_id_4d/%MPI%_variance_%id%
+test:
+  reference filename: testref/dirac_id_4d.ref

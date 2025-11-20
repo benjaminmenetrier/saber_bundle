@@ -1,0 +1,477 @@
+#:include 'generics.fypp'
+!----------------------------------------------------------------------
+! Module: type_mesh
+!> Mesh derived type
+! Author: Benjamin Menetrier
+! Licensing: this code is distributed under the CeCILL-C license
+! Copyright 2015-... UCAR, CERFACS, METEO-FRANCE and IRIT
+!----------------------------------------------------------------------
+module type_mesh
+
+!$ use omp_lib
+use tools_const, only: zero,one,two
+use tools_func, only: fletcher32,lonlatmod,rad2short,lonlat2xyz
+use tools_kinds, only: kind_short,kind_long,kind_real
+use tools_qsort, only: qsort
+use tools_ssrfpack, only: fval,fval_op,gradl
+use tools_stripack, only: bnodes,trfind,trmesh
+use type_mpl, only: mpl_type
+use type_rng, only: rng_type
+use type_tree, only: tree_type
+
+implicit none
+
+logical,parameter :: perturb_coordinates = .true.        !< Perturb mesh coordinate to avoid colinear points
+integer,parameter :: nnmax = 20                          !< Maximum number of nearest neighbors in the triangle search
+real(kind_real),parameter :: pfactor = 1.0e-10_kind_real !< Perturbation factor
+
+! Connectivity table row derived type
+type row_type
+   integer :: cols                 !< Number of columns
+   integer,allocatable :: nodes(:) !< Nodes indices
+end type row_type
+
+! Mesh derived type
+type mesh_type
+   ! Mesh structure
+   integer :: n                           !< Number of points
+   type(row_type),allocatable :: rows(:)  !< Connectivity table rows
+   integer,allocatable :: order(:)        !< Order of shuffled points
+   integer,allocatable :: order_inv(:)    !< Inverse order of shuffled points
+
+   ! Mesh coordinates
+   real(kind_real),allocatable :: lon(:)  !< Points longitudes
+   real(kind_real),allocatable :: lat(:)  !< Points latitudes
+   real(kind_real),allocatable :: x(:)    !< x-coordinate
+   real(kind_real),allocatable :: y(:)    !< y-coordinate
+   real(kind_real),allocatable :: z(:)    !< z-coordinate
+
+   ! Mesh boundary nodes
+   integer :: nb                          !< Number of boundary nodes
+   integer,allocatable :: bnodes(:)       !< Boundary nodes
+
+   ! STRIPACK
+   integer,allocatable :: list(:)         !< STRIPACK list
+   integer,allocatable :: lptr(:)         !< STRIPACK list pointer
+   integer,allocatable :: lend(:)         !< STRIPACK list end
+   integer :: lnew                        !< STRIPACK pointer to the first empty location in list
+contains
+   procedure :: init => mesh_init
+   procedure :: dealloc => mesh_dealloc
+   procedure :: barycentric => mesh_barycentric
+   procedure :: compute_grad => mesh_compute_grad
+   procedure :: compute_c1_interp => mesh_compute_c1_interp
+   procedure :: compute_c1_interp_op => mesh_compute_c1_interp_op
+end type mesh_type
+
+private
+public :: mesh_type
+
+contains
+
+!----------------------------------------------------------------------
+! Subroutine: mesh_init
+!> Initialization
+!----------------------------------------------------------------------
+subroutine mesh_init(mesh,mpl,rng,n,lon,lat)
+
+implicit none
+
+! Passed variables
+class(mesh_type),intent(inout) :: mesh    !< Mesh
+type(mpl_type),intent(inout) :: mpl       !< MPI data
+type(rng_type),intent(inout) :: rng       !< Random number generator
+integer,intent(in) :: n                   !< Mesh size
+real(kind_real),intent(in) :: lon(n)      !< Longitudes
+real(kind_real),intent(in) :: lat(n)      !< Latitudes
+
+! Local variables
+integer :: i,j,hash
+integer,allocatable :: shuffle(:),near(:),next(:),nodes(:)
+integer(kind_short) :: lon_short,lat_short
+integer(kind_long) :: hash_long
+real(kind_real),allocatable :: lon_pert(:),lat_pert(:),dist(:)
+logical :: init
+
+! Set name
+@:set_name(mesh_init)
+
+! Initialization
+mesh%n = n
+
+! Allocation
+allocate(shuffle(mesh%n))
+allocate(lon_pert(mesh%n))
+allocate(lat_pert(mesh%n))
+allocate(mesh%order(mesh%n))
+allocate(mesh%order_inv(mesh%n))
+allocate(mesh%lon(mesh%n))
+allocate(mesh%lat(mesh%n))
+allocate(mesh%x(mesh%n))
+allocate(mesh%y(mesh%n))
+allocate(mesh%z(mesh%n))
+allocate(mesh%rows(mesh%n))
+allocate(mesh%list(6*(mesh%n-2)))
+allocate(mesh%lptr(6*(mesh%n-2)))
+allocate(mesh%lend(mesh%n))
+allocate(near(mesh%n))
+allocate(next(mesh%n))
+allocate(dist(mesh%n))
+
+! Copy lon/lat
+mesh%lon = lon
+mesh%lat = lat
+
+! Reorder points
+call qsort(mesh%n,mesh%lon,mesh%lat,mesh%order,.false.)
+
+! Resynchronize random number generator
+call rng%resync(mpl)
+
+! Genereate shuffled order (more efficient to compute the Delaunay triangulation)
+call rng%shuffle(mesh%n,shuffle)
+mesh%order = mesh%order(shuffle)
+
+! Inverse order
+do i=1,mesh%n
+   mesh%order_inv(mesh%order(i)) = i
+end do
+
+! Reorder lon/lat
+mesh%lon = mesh%lon(mesh%order)
+mesh%lat = mesh%lat(mesh%order)
+
+if (perturb_coordinates) then
+   ! Perturb grid coordinates to avoid colinear points
+   do i=1,mesh%n
+      ! Compute hash
+      call rad2short(mesh%lon(i),lon_short)
+      call rad2short(mesh%lat(i),lat_short)
+      hash = fletcher32((/lon_short,lat_short/))
+      hash_long = int(hash,kind_long)
+
+      ! Generate pseudo-random numbers between -1e-10 and 1e-10 from the hash
+      call rng%lcg(lon_pert(i),hash_long)
+      call rng%lcg(lat_pert(i),hash_long)
+      lon_pert(i) = pfactor*(two*lon_pert(i)-one)
+      lat_pert(i) = pfactor*(two*lat_pert(i)-one)
+
+      ! Perturb grid coordinates
+      mesh%lon(i) = mesh%lon(i)+lon_pert(i)
+      mesh%lat(i) = mesh%lat(i)+lat_pert(i)
+
+      ! Apply bounds
+      call lonlatmod(mesh%lon(i),mesh%lat(i))
+   end do
+end if
+
+! Transform to cartesian coordinates
+do i=1,mesh%n
+   call lonlat2xyz(mpl,mesh%lon(i),mesh%lat(i),mesh%x(i),mesh%y(i),mesh%z(i))
+end do
+
+! Create mesh
+mesh%list = 0
+mesh%lend = 0
+mesh%lnew = 0
+if (mesh%n>0) call trmesh(mpl,mesh%n,mesh%x,mesh%y,mesh%z,mesh%list,mesh%lptr,mesh%lend,mesh%lnew,near,next,dist)
+
+! Count neighbors
+do i=1,mesh%n
+   mesh%rows(i)%cols = 0
+   j = mesh%lend(i)
+   init = .true.
+   do while ((j/=mesh%lend(i)).or.init)
+      mesh%rows(i)%cols = mesh%rows(i)%cols+1
+      j = mesh%lptr(j)
+      init = .false.
+   end do
+end do
+
+! Find neighbors indices
+do i=1,mesh%n
+   allocate(mesh%rows(i)%nodes(mesh%rows(i)%cols))
+   mesh%rows(i)%cols = 0
+   j = mesh%lend(i)
+   init = .true.
+   do while ((j/=mesh%lend(i)).or.init)
+      mesh%rows(i)%cols = mesh%rows(i)%cols+1
+      mesh%rows(i)%nodes(mesh%rows(i)%cols) = abs(mesh%list(j))
+      j = mesh%lptr(j)
+      init = .false.
+   end do
+end do
+
+if (perturb_coordinates) then
+   do i=1,mesh%n
+      ! Unperturb grid coordinates
+      mesh%lon(i) = mesh%lon(i)-lon_pert(i)
+      mesh%lat(i) = mesh%lat(i)-lat_pert(i)
+
+      ! Apply bounds
+      call lonlatmod(mesh%lon(i),mesh%lat(i))
+
+      ! Transform to cartesian coordinates
+      call lonlat2xyz(mpl,mesh%lon(i),mesh%lat(i),mesh%x(i),mesh%y(i),mesh%z(i))
+   end do
+end if
+
+! Allocation
+allocate(nodes(mesh%n))
+
+! Compute boundaries
+call bnodes(mesh%n,mesh%list,mesh%lptr,mesh%lend,nodes,mesh%nb)
+
+if (mesh%nb>0) then
+   ! Allocation
+   allocate(mesh%bnodes(mesh%nb))
+
+   ! Copy boundaries
+   mesh%bnodes = nodes(1:mesh%nb)
+end if
+
+! Desynchronize random number generator
+call rng%desync(mpl)
+
+! Release memory
+deallocate(shuffle)
+deallocate(lon_pert)
+deallocate(lat_pert)
+deallocate(near)
+deallocate(next)
+deallocate(dist)
+deallocate(nodes)
+
+end subroutine mesh_init
+
+!----------------------------------------------------------------------
+! Subroutine: mesh_dealloc
+!> Release memory
+!----------------------------------------------------------------------
+subroutine mesh_dealloc(mesh)
+
+implicit none
+
+! Passed variables
+class(mesh_type),intent(inout) :: mesh !< Mesh
+
+! Local variables
+integer :: i
+
+! Set name
+@:set_name(mesh_dealloc)
+
+! Release memory
+if (allocated(mesh%order)) deallocate(mesh%order)
+if (allocated(mesh%order_inv)) deallocate(mesh%order_inv)
+if (allocated(mesh%lon)) deallocate(mesh%lon)
+if (allocated(mesh%lat)) deallocate(mesh%lat)
+if (allocated(mesh%x)) deallocate(mesh%x)
+if (allocated(mesh%y)) deallocate(mesh%y)
+if (allocated(mesh%z)) deallocate(mesh%z)
+if (allocated(mesh%rows)) then
+   do i=1,mesh%n
+      if (allocated(mesh%rows(i)%nodes)) deallocate(mesh%rows(i)%nodes)
+   end do
+   deallocate(mesh%rows)
+end if
+if (allocated(mesh%list)) deallocate(mesh%list)
+if (allocated(mesh%lptr)) deallocate(mesh%lptr)
+if (allocated(mesh%lend)) deallocate(mesh%lend)
+
+end subroutine mesh_dealloc
+
+!----------------------------------------------------------------------
+! Subroutine: mesh_barycentric
+!> Compute barycentric coordinates
+!----------------------------------------------------------------------
+subroutine mesh_barycentric(mesh,mpl,lon,lat,tree,b,ib)
+
+implicit none
+
+! Passed variables
+class(mesh_type),intent(in) :: mesh !< Mesh
+type(mpl_type),intent(inout) :: mpl !< MPI data
+real(kind_real),intent(in) :: lon   !< Longitude
+real(kind_real),intent(in) :: lat   !< Latitude
+type(tree_type),intent(in) :: tree  !< Tree
+real(kind_real),intent(out) :: b(3) !< Barycentric weights
+integer,intent(out) :: ib(3)        !< Barycentric indices
+
+! Local variables
+integer :: order(3)
+integer,allocatable :: nn_index(:)
+real(kind_real) :: xyz(3)
+
+! Set name
+@:set_name(mesh_barycentric)
+
+! Transform to cartesian coordinates
+call lonlat2xyz(mpl,lon,lat,xyz(1),xyz(2),xyz(3))
+
+! Allocation
+allocate(nn_index(1))
+
+! Find the next nearest neighbor
+call tree%find_nearest_neighbors(mpl,lon,lat,1,nn_index)
+
+! Compute barycentric coordinates
+b = zero
+ib = 0
+call trfind(nn_index(1),xyz,mesh%n,mesh%x,mesh%y,mesh%z,mesh%list,mesh%lptr,mesh%lend,b(1),b(2),b(3),ib(1),ib(2),ib(3))
+
+! Transform indices
+if (all(ib>0)) then
+   ib = mesh%order(ib)
+else
+   ib = mpl%msv%vali
+end if
+
+! Release memory
+deallocate(nn_index)
+
+! Order
+if (mpl%msv%isallnot(ib)) then
+   call qsort(3,ib,order)
+   b = b(order)
+end if
+
+end subroutine mesh_barycentric
+
+!----------------------------------------------------------------------
+! Subroutine: mesh_compute_grad
+!> Compute gradient (SSRF local gradient estimator)
+!----------------------------------------------------------------------
+subroutine mesh_compute_grad(mesh,mpl,i,field,g)
+
+implicit none
+
+! Passed variables
+class(mesh_type),intent(in) :: mesh         !< Mesh
+type(mpl_type),intent(inout) :: mpl         !< MPI data
+integer,intent(in) :: i                     !< Index
+real(kind_real),intent(in) :: field(mesh%n) !< Field
+real(kind_real),intent(out) :: g(3)         !< Gradient
+
+! Local variables
+integer :: ieff
+real(kind_real) :: field_eff(mesh%n)
+
+! Set name
+@:set_name(mesh_compute_grad)
+
+! Inverse order
+ieff = mesh%order_inv(i)
+
+! Transform field
+field_eff = field(mesh%order)
+
+! Compute gradient
+call gradl(mpl,mesh%n,ieff,mesh%x,mesh%y,mesh%z,field_eff,mesh%list,mesh%lptr,mesh%lend,g)
+
+end subroutine mesh_compute_grad
+
+!----------------------------------------------------------------------
+! Subroutine: mesh_compute_c1_interp
+!> Compute C1 interpolation (SSRF estimator)
+!----------------------------------------------------------------------
+subroutine mesh_compute_c1_interp(mesh,mpl,tree_src,field_src,n_dst,lon_dst,lat_dst,field_dst,grad_src)
+
+implicit none
+
+! Passed variables
+class(mesh_type),intent(in) :: mesh                       !< Mesh
+type(mpl_type),intent(inout) :: mpl                       !< MPI data
+type(tree_type),intent(in) :: tree_src                    !< Source tree
+real(kind_real),intent(in) :: field_src(mesh%n)           !< Source field
+integer,intent(in) :: n_dst                               !< Destination size
+real(kind_real),intent(in) :: lon_dst(n_dst)              !< Destination longitudes
+real(kind_real),intent(in) :: lat_dst(n_dst)              !< Destination latitudes
+real(kind_real),intent(out) :: field_dst(n_dst)           !< Destination field
+real(kind_real),intent(in),optional :: grad_src(mesh%n,3) !< Source gradient (optional)
+
+! Local variables
+integer :: i_dst,nn_index(1),ib(3)
+real(kind_real) :: field_eff(mesh%n),xyz(3),b(3),p1(3),p2(3),p3(3),g1(3),g2(3),g3(3)
+
+! Set name
+@:set_name(mesh_compute_c1_interp)
+
+! Transform field
+field_eff = field_src(mesh%order)
+
+do i_dst=1,n_dst
+   ! Transform to cartesian coordinates
+   call lonlat2xyz(mpl,lon_dst(i_dst),lat_dst(i_dst),xyz(1),xyz(2),xyz(3))
+
+   ! Find the next nearest neighbor
+   call tree_src%find_nearest_neighbors(mpl,lon_dst(i_dst),lat_dst(i_dst),1,nn_index)
+
+   ! Compute barycentric coordinates
+   b = zero
+   ib = 0
+   call trfind(nn_index(1),xyz,mesh%n,mesh%x,mesh%y,mesh%z,mesh%list,mesh%lptr,mesh%lend,b(1),b(2),b(3),ib(1),ib(2),ib(3))
+
+   ! Vertices
+   p1 = (/mesh%x(ib(1)),mesh%y(ib(1)),mesh%z(ib(1))/)
+   p2 = (/mesh%x(ib(2)),mesh%y(ib(2)),mesh%z(ib(2))/)
+   p3 = (/mesh%x(ib(3)),mesh%y(ib(3)),mesh%z(ib(3))/)
+
+   if (present(grad_src)) then
+      ! Copy gradient
+      g1 = grad_src(mesh%order(ib(1)),:)
+      g2 = grad_src(mesh%order(ib(2)),:)
+      g3 = grad_src(mesh%order(ib(3)),:)
+   else
+      ! Compute gradient
+      call gradl(mpl,mesh%n,ib(1),mesh%x,mesh%y,mesh%z,field_eff,mesh%list,mesh%lptr,mesh%lend,g1)
+      call gradl(mpl,mesh%n,ib(2),mesh%x,mesh%y,mesh%z,field_eff,mesh%list,mesh%lptr,mesh%lend,g2)
+      call gradl(mpl,mesh%n,ib(3),mesh%x,mesh%y,mesh%z,field_eff,mesh%list,mesh%lptr,mesh%lend,g3)
+   end if
+
+   ! Normalize the coordinates
+   b = b/sum(b)
+
+   ! Get interpolated value
+   field_dst(i_dst) = fval(mpl,b(1),b(2),b(3),p1,p2,p3,field_eff(ib(1)),field_eff(ib(2)),field_eff(ib(3)),g1,g2,g3)
+end do
+
+end subroutine mesh_compute_c1_interp
+
+!----------------------------------------------------------------------
+! Subroutine: mesh_compute_c1_interp_op
+!> Compute C1 interpolation operator (indices and weights)
+!----------------------------------------------------------------------
+subroutine mesh_compute_c1_interp_op(mesh,mpl,b,ib,af,ag)
+
+implicit none
+
+! Passed variables
+class(mesh_type),intent(in) :: mesh    !< Mesh
+type(mpl_type),intent(inout) :: mpl    !< MPI data
+real(kind_real),intent(in) :: b(3)     !< Barycentric weights
+integer,intent(in) :: ib(3)            !< Barycentric indices
+real(kind_real),intent(out) :: af(3)   !< Function weights
+real(kind_real),intent(out) :: ag(3,3) !< Gradient weights
+
+! Local variables
+real(kind_real) :: p1(3),p2(3),p3(3),v_mat(12)
+
+! Set name
+@:set_name(mesh_compute_c1_interp_op)
+
+! Vertices coordinates
+p1 = (/mesh%x(mesh%order_inv(ib(1))),mesh%y(mesh%order_inv(ib(1))),mesh%z(mesh%order_inv(ib(1)))/)
+p2 = (/mesh%x(mesh%order_inv(ib(2))),mesh%y(mesh%order_inv(ib(2))),mesh%z(mesh%order_inv(ib(2)))/)
+p3 = (/mesh%x(mesh%order_inv(ib(3))),mesh%y(mesh%order_inv(ib(3))),mesh%z(mesh%order_inv(ib(3)))/)
+
+! Get SSRF operator
+call fval_op(mpl,b(1),b(2),b(3),p1,p2,p3,v_mat)
+af = v_mat(1:3)
+ag(:,1) = v_mat(4:6)
+ag(:,2) = v_mat(7:9)
+ag(:,3) = v_mat(10:12)
+
+end subroutine mesh_compute_c1_interp_op
+
+end module type_mesh

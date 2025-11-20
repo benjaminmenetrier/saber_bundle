@@ -1,0 +1,76 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    N: 10
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    levels: 2
+  halo: 1
+background:
+  states:
+  - date: 2010-01-01T12:00:00Z
+    state variables:
+    - air_horizontal_streamfunction
+  - date: 2010-01-01T18:00:00Z
+    state variables:
+    - air_horizontal_streamfunction
+background error:
+  covariance model: SABER
+  ensemble:
+    members from template:
+      template:
+        states:
+        - date: 2010-01-01T12:00:00Z
+          filepath: testdata/randomization_bump_nicas_L10L2/_MPI_-_OMP__member_%mem%
+          state variables:
+          - air_horizontal_streamfunction
+        - date: 2010-01-01T18:00:00Z
+          filepath: testdata/randomization_bump_nicas_L10L2T18/_MPI_-_OMP__member_%mem%
+          state variables:
+          - air_horizontal_streamfunction
+      pattern: '%mem%'
+      nmembers: 25
+      zero padding: 6
+  saber central block:
+    saber block name: Ensemble
+dirac:
+  - lon:
+    - 0.0
+    lat:
+    - -0.001
+    level:
+    - 1
+    variable:
+    - air_horizontal_streamfunction
+  - {}
+diagnostic points:
+  - lon:
+    - 10.0
+    lat:
+    - -0.001
+    level:
+    - 1
+    variable:
+    - air_horizontal_streamfunction
+  - lon:
+    - 0.0
+    - 10.0
+    lat:
+    - -0.001
+    - -0.001
+    level:
+    - 1
+    - 1
+    variable:
+    - air_horizontal_streamfunction
+    - air_horizontal_streamfunction
+output dirac:
+  states:
+  - mpi pattern: '%MPI%'
+    filepath: testdata/dirac_ens_noloc_4d/%MPI%_dirac_%id%_12
+  - mpi pattern: '%MPI%'
+    filepath: testdata/dirac_ens_noloc_4d/%MPI%_dirac_%id%_18
+test:
+  reference filename: testref/dirac_ens_noloc_4d.ref

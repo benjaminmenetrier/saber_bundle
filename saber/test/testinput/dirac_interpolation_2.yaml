@@ -1,0 +1,55 @@
+geometry:
+  function space: NodeColumns
+  grid:
+    name: CS-LFR-15
+  partitioner: cubedsphere
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    levels: 1
+  halo: 1
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables:
+  - air_horizontal_streamfunction
+background error:
+  covariance model: SABER
+  adjoint test: true
+  inverse test: true
+  saber central block:
+    saber block name: ID
+  saber outer blocks:
+  - saber block name: interpolation
+    inner inverse tolerance: 0.08
+    outer inverse tolerance: 0.08
+    inner geometry:
+      function space: StructuredColumns
+      grid:
+        name: F15
+      halo: 1
+    forward interpolator:
+      local interpolator type: atlas interpolator
+      interpolation method:
+        type: structured-linear2D
+        adjoint: true
+    inverse interpolator:
+      local interpolator type: atlas interpolator
+      interpolation method:
+        type: cubedsphere-bilinear
+        adjoint: true
+    active variables:
+    - air_horizontal_streamfunction
+dirac:
+  lon:
+  - 3.75
+  lat:
+  - 3.74199
+  level:
+  - 1
+  variable:
+  - air_horizontal_streamfunction
+output dirac:
+  mpi pattern: '%MPI%'
+  filepath: testdata/dirac_interpolation_2/dirac_%id%_%MPI%
+test:
+  reference filename: testref/dirac_interpolation_2.ref

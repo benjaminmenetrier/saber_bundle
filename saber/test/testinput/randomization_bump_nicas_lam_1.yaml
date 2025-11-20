@@ -1,0 +1,81 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type : regional
+    nx : 71
+    ny : 53
+    dx : 2.5e3
+    dy : 2.5e3
+    lonlat(centre) : [9.9, 56.3]
+    projection :  
+      type : lambert_conformal_conic
+      latitude0  : 56.3
+      longitude0 : 0.0
+    y_numbering: 1
+  partitioner: checkerboard
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    levels: 10
+  - variables:
+    - air_pressure_at_surface
+    levels: 1
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables:
+  - air_horizontal_streamfunction
+  - air_horizontal_velocity_potential
+  - air_pressure_at_surface
+  filepath: testdata/convertstate_lam/rh_avg
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      io:
+        data directory: testdata
+        files prefix: randomization_bump_nicas_lam_1/_MPI_-_OMP_
+      drivers:
+        multivariate strategy: univariate
+        compute nicas: true
+      nicas:
+        resolution: 5
+        explicit length-scales: true
+        horizontal length-scale:
+        - groups:
+          - air_horizontal_streamfunction
+          value: 150.0e3
+        - groups:
+          - air_pressure_at_surface
+          value: 150.0e3
+        vertical length-scale:
+        - groups:
+          - air_horizontal_streamfunction
+          value: 5.0
+        - groups:
+          - air_pressure_at_surface
+          value: 0.0
+      grids:
+      - model:
+          variables:
+          - air_horizontal_streamfunction
+          - air_horizontal_velocity_potential
+          groups:
+          - group name: air_horizontal_streamfunction
+            variables:
+            - air_horizontal_streamfunction
+            - air_horizontal_velocity_potential
+      - model:
+          variables:
+          - air_pressure_at_surface
+  saber outer blocks:
+  - saber block name: StdDev
+    read:
+      model file:
+        filepath: testdata/convertstate_lam/rh_pert
+  randomization size: 1
+output states:
+  filepath: testdata/randomization_bump_nicas_lam_1/_MPI_-_OMP__rh
+test:
+  reference filename: testref/randomization_bump_nicas_lam_1.ref

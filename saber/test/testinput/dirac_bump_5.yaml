@@ -1,0 +1,82 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    N: 10
+# TODO(Nate): switch to 12 when interpolator inverse is fixed
+#    N: 12
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    levels: 2
+  halo: 1
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables:
+  - air_horizontal_streamfunction
+background error:
+  covariance model: SABER
+  adjoint test: true
+  square-root test: true
+  square-root tolerance: 3.0e-12
+  ensemble:
+    members from template:
+      template:
+        date: 2010-01-01T12:00:00Z
+        filepath: testdata/randomization_bump_nicas_L10L2/_MPI_-_OMP__member_%mem%
+# TODO(Nate): switch to 12 when interpolator inverse is fixed
+#        filepath: testdata/randomization_bump_nicas_L12L2/_MPI_-_OMP__member_%mem%
+        state variables:
+        - air_horizontal_streamfunction
+      pattern: '%mem%'
+      nmembers: 25
+      zero padding: 6
+  saber central block:
+    saber block name: Ensemble
+    localization:
+      saber central block:
+        saber block name: BUMP_NICAS
+        read:
+          general:
+            testing: true
+          io:
+            data directory: testdata
+            files prefix: dirac_bump_5/_MPI_-_OMP_
+            alias:
+            - in code: common
+              in file: air_horizontal_streamfunction
+            overriding nicas file: error_covariance_training_bump_hdiag-nicas_1/_MPI_-_OMP__nicas
+          drivers:
+            multivariate strategy: duplicated
+            read local nicas: true
+      saber outer blocks:
+      - saber block name: StdDev
+        read:
+          model file:
+            filepath: testdata/error_covariance_training_bump_stddev_3/_MPI_-_OMP__stddev
+# TODO(Nate): uncomment interpolation and remove stddev when interpolator inverse is fixed
+#      - saber block name: interpolation
+#        inner geometry:
+#          function space: StructuredColumns
+#          grid:
+#            type: regular_lonlat
+#            N: 10
+#          halo: 1
+#        local interpolator:
+#          interpolation method:
+#            type: structured-linear2D
+#            adjoint: true
+dirac:
+  lon:
+  - 0.0
+  lat:
+  - 0.0
+  level:
+  - 1
+  variable:
+  - air_horizontal_streamfunction
+output dirac:
+  mpi pattern: '%MPI%'
+  filepath: testdata/dirac_bump_5/%MPI%_dirac_%id%
+test:
+  reference filename: testref/dirac_bump_5.ref

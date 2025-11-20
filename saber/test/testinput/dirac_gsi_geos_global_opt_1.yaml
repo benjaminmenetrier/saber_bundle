@@ -1,0 +1,84 @@
+# Dirac test to generate a reference for BUMP scaling check (optimization_bump_hdiag_gsi_1.yaml), with homogeneous length-scales and no rescaling in the namelist
+background error:
+  covariance model: SABER
+  adjoint test: true
+  saber central block:
+    saber block name: gsi static covariance
+    read:
+      gsi error covariance file: testdata/gsi-coeffs-gmao-global-l72x72y46_opt1.nc4
+      gsi berror namelist file: testdata/dirac_gsi_geos_global_opt_1.nml
+      gsi akbk: /dev/null
+      debugging mode: false
+  saber outer blocks:
+  # The quench geometry used in this test has the same gridpoints as the GSI grid, but in atlas's
+  # ordering (north-to-south) instead of GSI's ordering (south-to-north). We use an interpolation
+  # block to reorder the grid points to match GSI order. This is not very efficient, but is fine
+  # for a ctest.
+  - saber block name: interpolation
+    inner geometry:
+      function space: StructuredColumns
+      custom grid matching gsi:
+        type: latlon
+        lats: 46
+        lons: 72
+      custom partitioner matching gsi:
+        bands: _MPI_  # matches GSI partition for 1 or 2 MPI tasks, but too simplistic in general
+      halo: 1
+    forward interpolator:
+      local interpolator type: oops unstructured grid interpolator
+    inverse interpolator:
+      local interpolator type: oops unstructured grid interpolator
+    state variables to inverse:  # Make sure to also re-order the state passed to GSI-B constructor
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    - air_pressure_at_surface
+dirac:
+  lon:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  lat:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  level:
+  - 1
+  - 19
+  - 37
+  - 55
+  - 72
+  variable:
+  - air_horizontal_streamfunction
+  - air_horizontal_streamfunction
+  - air_horizontal_streamfunction
+  - air_horizontal_streamfunction
+  - air_horizontal_streamfunction
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    nx: 72
+    ny: 46
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    levels: 72
+  - variables:
+    - air_pressure_at_surface
+    levels: 1
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables:
+  - air_horizontal_streamfunction
+  - air_horizontal_velocity_potential
+  - air_pressure_at_surface
+output dirac:
+  mpi pattern: '%MPI%'
+  filepath: testdata/dirac_gsi_geos_global_opt_1/%MPI%_dirac_%id%
+test:
+  reference filename: testref/dirac_gsi_geos_global_opt_1.ref

@@ -1,0 +1,34 @@
+       Independent levels:  1[2]
+          Subset Sc0 size:              762
+          Domain area (% of Earth area): 0.100E+03%
+             Level   1 ~> 100.0%
+             Level   2 ~> 100.0%
+             Level   1 ~>  0.100E+01 vert. coord.
+             Level   2 ~>  0.200E+01 vert. coord.
+          Norm of air_horizontal_streamfunction:  0.34890634E+02
+          Norm of air_horizontal_streamfunction:  0.38534971E+02
+          Norm of air_horizontal_streamfunction:  0.35421821E+02
+          Norm of air_horizontal_streamfunction:  0.44860594E+02
+          Norm of air_horizontal_streamfunction:  0.38955643E+02
+          Norm of air_horizontal_streamfunction:  0.37209447E+02
+          Norm of air_horizontal_streamfunction:  0.39058605E+02
+          Norm of air_horizontal_streamfunction:  0.44091670E+02
+          Norm of air_horizontal_streamfunction:  0.36876807E+02
+          Norm of air_horizontal_streamfunction:  0.41074181E+02
+          Norm of air_horizontal_streamfunction:  0.42849305E+02
+          Norm of air_horizontal_streamfunction:  0.29266116E+02
+          Norm of air_horizontal_streamfunction:  0.39662694E+02
+          Norm of air_horizontal_streamfunction:  0.37743569E+02
+          Norm of air_horizontal_streamfunction:  0.40012135E+02
+          Norm of air_horizontal_streamfunction:  0.38285539E+02
+          Norm of air_horizontal_streamfunction:  0.36891853E+02
+          Norm of air_horizontal_streamfunction:  0.37878114E+02
+          Norm of air_horizontal_streamfunction:  0.38799246E+02
+          Norm of air_horizontal_streamfunction:  0.37601941E+02
+                Level   1: rhflt =   40000.00 km, rel. diff. = -0.91390E-02
+                Level   2: rhflt =   40000.00 km, rel. diff. =  0.13194E-01
+             Level   1 ~>  0.10331E+01 /  0.10331E+01
+             Level   2 ~>  0.10294E+01 /  0.10294E+01
+Norm of output parameter stddev - 1: 3.9643328835553255e+01
+Norm of output parameter var - 1: 4.2219631918280299e+01
+Norm of output parameter m4 - 1: 1.3315139071935363e+02

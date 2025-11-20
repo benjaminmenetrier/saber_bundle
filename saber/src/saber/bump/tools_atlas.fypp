@@ -1,0 +1,575 @@
+#:include 'generics.fypp'
+!----------------------------------------------------------------------
+! Module: tools_atlas
+!> ATLAS tools
+! Author: Benjamin Menetrier
+! Licensing: this code is distributed under the CeCILL-C license
+! Copyright 2015-... UCAR, CERFACS, METEO-FRANCE and IRIT
+!----------------------------------------------------------------------
+module tools_atlas
+
+use atlas_module, only: atlas_structuredgrid,atlas_regionalgrid,atlas_field,atlas_integer,atlas_real,atlas_functionspace, &
+ & atlas_functionspace_nodecolumns,atlas_functionspace_pointcloud,atlas_functionspace_structuredcolumns, &
+ & atlas_projection,atlas_config,atlas_json
+use tools_const, only: zero,quarter,half,two,three,eight,deg2rad,pi,req
+use tools_kinds, only: kind_int,kind_real
+use tools_func, only: convert_i2l
+use type_mpl, only: mpl_type
+
+implicit none
+
+interface get_grid
+   module procedure atlas_get_global_grid_from_size
+   module procedure atlas_get_global_grid_from_cell
+   module procedure atlas_get_regional_grid_from_size
+   module procedure atlas_get_regional_grid_from_cell
+end interface
+interface field_to_array
+   #:for dtype in dtypes_irl
+      module procedure atlas_field_to_array_${dtype}$
+   #:endfor
+end interface
+interface field_from_array
+    #:for dtype in dtypes_ir
+      module procedure atlas_field_from_array_${dtype}$
+    #:endfor
+end interface
+interface get_atlas_functionspace_size
+   module procedure atlas_get_atlas_functionspace_size
+end interface
+interface get_atlas_field_size
+   module procedure atlas_get_atlas_field_size
+end interface
+
+private
+public :: get_grid
+public :: field_to_array,field_from_array,get_atlas_functionspace_size,get_atlas_field_size
+
+contains
+
+!----------------------------------------------------------------------
+! Subroutine: atlas_get_global_grid_from_size
+!> Define global ATLAS grid (reduced Gaussian) from minimum number of points
+!----------------------------------------------------------------------
+subroutine atlas_get_global_grid_from_size(mpl,nmin,agrid,n)
+
+implicit none
+
+! Passed variables
+type(mpl_type),intent(inout) :: mpl               !< MPI data
+integer,intent(in) :: nmin                        !< Minimum number of points
+type(atlas_structuredgrid),intent(inout) :: agrid !< ATLAS grid
+integer,intent(out),optional :: n                 !< Grid size
+
+! Local variables
+integer :: trunc
+character(len=6) :: gridid
+
+! Set name
+@:set_name(atlas_get_global_grid_from_size)
+
+! Check number of points
+if (nmin<40) call mpl%abort('${subr}$','minimum number of points is too small')
+
+! Get truncation
+trunc = max(floor(-4.5_kind_real+sqrt(20.25_kind_real+quarter*real(nmin,kind_real)))+1,2)
+
+! Define ID
+write(gridid,'(a,i5.5)') 'O',trunc
+
+! Define grid
+agrid = atlas_structuredgrid(gridid)
+
+! Define number of points
+if (present(n)) n = 4*trunc**2+36*trunc
+
+end subroutine atlas_get_global_grid_from_size
+
+!----------------------------------------------------------------------
+! Subroutine: atlas_get_global_grid_from_cell
+!> Define global ATLAS grid (reduced Gaussian) from maximum cell size
+!----------------------------------------------------------------------
+subroutine atlas_get_global_grid_from_cell(mpl,gamma,agrid,n)
+
+implicit none
+
+! Passed variables
+type(mpl_type),intent(inout) :: mpl               !< MPI data
+real(kind_real),intent(in) :: gamma               !< Maximum cell size
+type(atlas_structuredgrid),intent(inout) :: agrid !< ATLAS grid
+integer,intent(out),optional :: n                 !< Grid size
+
+! Local variables
+integer :: trunc
+character(len=6) :: gridid
+
+! Set name
+@:set_name(atlas_get_global_grid_from_cell)
+
+! Check cell size
+if (.not.(gamma>zero)) call mpl%abort('${subr}$','maximum cell size should be positive')
+
+! Get truncation
+trunc = max(floor(half*pi/gamma)-4,2)
+
+! Set maximum truncation
+if (trunc>9999) call mpl%abort('${subr}$','octahedral truncation is too large')
+
+! Define ID
+write(gridid,'(a,i4.4)') 'O',trunc
+
+! Define grid
+agrid = atlas_structuredgrid(gridid)
+
+! Copy number of points
+if (present(n)) n = 4*trunc**2+36*trunc
+
+end subroutine atlas_get_global_grid_from_cell
+
+!----------------------------------------------------------------------
+! Subroutine: atlas_get_regional_grid_from_size
+!> Define regional ATLAS grid from minimum number of points
+!----------------------------------------------------------------------
+subroutine atlas_get_regional_grid_from_size(mpl,nmin,aconfig_grid,agrid,n)
+
+implicit none
+
+! Passed variables
+type(mpl_type),intent(inout) :: mpl               !< MPI data
+integer,intent(in) :: nmin                        !< Minimum number of points
+type(atlas_config),intent(in) :: aconfig_grid     !< ATLAS grid configuration
+type(atlas_structuredgrid),intent(inout) :: agrid !< ATLAS grid
+integer,intent(out),optional :: n                 !< Grid size
+
+! Local variables
+integer :: nx,ny
+real(kind_real) :: xmin,xmax,ymin,ymax,Lx,Ly,xy_min(2),xy_max(2),ymean
+type(atlas_config) :: aconfig_proj
+type(atlas_projection) :: aproj
+character(len=:),allocatable :: units
+
+! Set name
+@:set_name(atlas_get_regional_grid_from_size)
+
+! Check number of points
+if (nmin<9) call mpl%abort('${subr}$','minimum number of points is too small')
+
+! Input grid specifications
+if (.not.aconfig_grid%get('domain.xmin',xmin)) call mpl%abort('${subr}$','missing domain.xmin')
+if (.not.aconfig_grid%get('domain.xmax',xmax)) call mpl%abort('${subr}$','missing domain.xmax')
+if (.not.aconfig_grid%get('domain.ymin',ymin)) call mpl%abort('${subr}$','missing domain.ymin')
+if (.not.aconfig_grid%get('domain.ymax',ymax)) call mpl%abort('${subr}$','missing domain.ymax')
+if (.not.aconfig_grid%get('domain.units',units)) call mpl%abort('${subr}$','missing domain.units')
+
+if (units=='meters') then
+   ! Grid parameters
+   Lx = (xmax-xmin)/req
+   Ly = (ymax-ymin)/req
+   nx = floor(sqrt(two*sqrt(three)*Lx/Ly*real(nmin,kind_real)))+1
+   ny = floor(sqrt(eight/sqrt(three)*Ly/Lx*real(nmin,kind_real)))+1
+   if (nx<2) call mpl%abort('${subr}$','nx is too small')
+   if (ny<2) call mpl%abort('${subr}$','ny is too small')
+
+   ! Define corners
+   xy_min = (/xmin,ymin/)
+   xy_max = (/xmax,ymax/)
+
+   ! Set new regional grid
+   if (aconfig_grid%get('projection',aconfig_proj)) then
+      ! Get projection
+      aproj = atlas_projection(aconfig_proj)
+
+      ! Build grid
+      agrid = atlas_regionalgrid(nx,ny,xy_min,xy_max,aproj)
+   else
+      ! Build grid without projection
+     agrid = atlas_regionalgrid(nx,ny,xy_min,xy_max)
+   end if
+else if (units=='degrees') then
+   ! Grid parameters
+   ymean = half*(ymin+ymax)
+   Lx = (xmax-xmin)*deg2rad*cos(ymean)
+   Ly = (ymax-ymin)*deg2rad
+   nx = floor(sqrt(two*sqrt(three)*Lx/Ly*real(nmin,kind_real)))+1
+   ny = floor(sqrt(eight/sqrt(three)*Ly/Lx*real(nmin,kind_real)))+1
+   if (nx<2) call mpl%abort('${subr}$','nx is too small')
+   if (ny<2) call mpl%abort('${subr}$','ny is too small')
+
+   ! Set new regional grid
+   if (aconfig_grid%get('projection',aconfig_proj)) then
+      ! Get projection
+      aproj = atlas_projection(aconfig_proj)
+
+      ! Build grid
+      agrid = atlas_regionalgrid(nx,ny,ymax,xmin,ymin,xmax,aproj)
+   else
+      ! Build grid without projection
+     agrid = atlas_regionalgrid(nx,ny,ymax,xmin,ymin,xmax)
+   end if
+else
+   call mpl%abort('${subr}$','unexpected domain units')
+end if
+
+! Define number of points
+if (present(n)) n = nx*ny
+
+! Release memory
+call aconfig_proj%final()
+call aproj%final()
+
+end subroutine atlas_get_regional_grid_from_size
+
+!----------------------------------------------------------------------
+! Subroutine: atlas_get_regional_grid_from_cell
+!> Define regional ATLAS grid from maximum cell size
+!----------------------------------------------------------------------
+subroutine atlas_get_regional_grid_from_cell(mpl,gamma,aconfig_grid,agrid,n)
+
+implicit none
+
+! Passed variables
+type(mpl_type),intent(inout) :: mpl               !< MPI data
+real(kind_real),intent(in) :: gamma               !< Maximum cell size
+type(atlas_config),intent(in) :: aconfig_grid     !< ATLAS grid configuration
+type(atlas_structuredgrid),intent(inout) :: agrid !< ATLAS grid
+integer,intent(out),optional :: n                 !< Grid size
+
+! Local variables
+integer :: nx,ny
+real(kind_real) :: xmin,xmax,ymin,ymax,Lx,Ly,dx,dy,xy_min(2),xy_max(2),ymean
+type(atlas_config) :: aconfig_proj
+type(atlas_projection) :: aproj
+character(len=:),allocatable :: units
+
+! Set name
+@:set_name(atlas_get_regional_grid_from_cell)
+
+! Check cell size
+if (.not.(gamma>zero)) call mpl%abort('${subr}$','maximum cell size should be positive')
+
+! Input grid specifications
+if (.not.aconfig_grid%get('domain.xmin',xmin)) call mpl%abort('${subr}$','missing domain.xmint')
+if (.not.aconfig_grid%get('domain.xmax',xmax)) call mpl%abort('${subr}$','missing domain.xmax')
+if (.not.aconfig_grid%get('domain.ymin',ymin)) call mpl%abort('${subr}$','missing domain.ymin')
+if (.not.aconfig_grid%get('domain.ymax',ymax)) call mpl%abort('${subr}$','missing domain.ymax')
+if (.not.aconfig_grid%get('domain.units',units)) call mpl%abort('${subr}$','missing domain.units')
+
+if (units=='meters') then
+   ! Grid parameters
+   Lx = (xmax-xmin)/req
+   Ly = (ymax-ymin)/req
+   dx = gamma
+   dy = sqrt(three)/two*gamma
+   nx = floor(Lx/dx)+1
+   ny = floor(Ly/dy)+1
+   if (nx<2) call mpl%abort('${subr}$','nx is too small')
+   if (ny<2) call mpl%abort('${subr}$','ny is too small')
+
+   ! Define corners
+   xy_min = (/xmin,ymin/)
+   xy_max = (/xmax,ymax/)
+
+   ! Set new regional grid
+   if (aconfig_grid%get('projection',aconfig_proj)) then
+      ! Get projection
+      aproj = atlas_projection(aconfig_proj)
+
+      ! Build grid
+      agrid = atlas_regionalgrid(nx,ny,xy_min,xy_max,aproj)
+   else
+      ! Build grid without projection
+     agrid = atlas_regionalgrid(nx,ny,xy_min,xy_max)
+   end if
+else if (units=='degrees') then
+   ! Grid parameters
+   ymean = half*(ymin+ymax)
+   Lx = (xmax-xmin)*deg2rad*cos(ymean)
+   Ly = (ymax-ymin)*deg2rad
+   dx = gamma
+   dy = sqrt(three)/two*gamma
+   nx = floor(Lx/dx)+1
+   ny = floor(Ly/dy)+1
+   if (nx<2) call mpl%abort('${subr}$','nx is too small')
+   if (ny<2) call mpl%abort('${subr}$','ny is too small')
+
+   ! Set new regional grid
+   if (aconfig_grid%get('projection',aconfig_proj)) then
+      ! Get projection
+      aproj = atlas_projection(aconfig_proj)
+
+      ! Build grid
+      agrid = atlas_regionalgrid(nx,ny,ymax,xmin,ymin,xmax,aproj)
+   else
+      ! Build grid without projection
+     agrid = atlas_regionalgrid(nx,ny,ymax,xmin,ymin,xmax)
+   end if
+else
+   call mpl%abort('${subr}$','unexpected domain units')
+end if
+
+! Copy number of points
+if (present(n)) n = nx*ny
+
+end subroutine atlas_get_regional_grid_from_cell
+
+ #:for dtype in dtypes_ir
+!----------------------------------------------------------------------
+! Subroutine: atlas_field_to_array_${dtype}$
+!> Convert ATLAS field to field
+!----------------------------------------------------------------------
+subroutine atlas_field_to_array_${dtype}$(afield,mpl,array,lev2d)
+
+implicit none
+
+! Passed variables
+type(atlas_field),intent(in) :: afield        !< ATLAS field
+type(mpl_type),intent(inout) :: mpl           !< MPI data
+${ftype[dtype]}$,intent(out) :: array(:,:)    !< Array
+character(len=*),intent(in),optional :: lev2d !< Level for 2D variables
+
+! Local variables
+integer :: nmga,nnodes,nl0,nl2d,il0
+${ftype[dtype]}$,pointer :: ptr(:,:)
+character(len=1024) :: llev2d
+
+! Set name
+@:set_name(atlas_field_to_array_${dtype}$)
+
+! Local lev2d
+llev2d = 'first'
+if (present(lev2d)) llev2d = lev2d
+if (.not.((trim(llev2d)=='first').or.(trim(llev2d)=='last'))) call mpl%abort('${subr}$','wrong lev2d')
+
+! Check kind
+if (afield%kind()/=${atlas_kind[dtype]}$) call mpl%abort('${subr}$','wrong kind for field '//afield%name())
+
+! Get ATLAS field size
+nmga = get_atlas_field_size(mpl,afield)
+
+! Get number of nodes and number of levels
+nnodes = size(array,1)
+nl0 = size(array,2)
+
+! Check number of nodes
+if (nmga/=nnodes) call mpl%abort('${subr}$','wrong number of nodes for field '//afield%name())
+
+! Initialization
+array = ${zero[dtype]}$
+
+! Copy data
+! For the 2D case (afield%levels()==1), the field is copied:
+! - at the first level of array if (lev2d=='first')
+! - at the last level of array if (lev2d=='last')
+call afield%data(ptr)
+if (afield%levels()==1) then
+   if (trim(llev2d)=='first') then
+      nl2d = 1
+   else if (trim(llev2d)=='last') then
+      nl2d = nl0
+   end if
+   if (nmga>0) array(:,nl2d) = ptr(1,1:nmga)
+else
+   if (nl0>afield%levels()) call mpl%abort('${subr}$','not enough levels in ATLAS field')
+   if (nmga>0) then
+      do il0=1,nl0
+         array(:,il0) = ptr(il0,1:nmga)
+      end do
+   end if
+end if
+
+end subroutine atlas_field_to_array_${dtype}$
+#:endfor
+
+!----------------------------------------------------------------------
+! Subroutine: atlas_field_to_array_logical
+!> Convert ATLAS field to field
+!----------------------------------------------------------------------
+subroutine atlas_field_to_array_logical(afield,mpl,array,lev2d)
+
+implicit none
+
+! Passed variables
+type(atlas_field),intent(in) :: afield        !< ATLAS field
+type(mpl_type),intent(inout) :: mpl           !< MPI data
+logical,intent(out) :: array(:,:)             !< Array
+character(len=*),intent(in),optional :: lev2d !< Level for 2D variables
+
+! Local variables
+integer,allocatable :: array_int(:,:)
+character(len=1024) :: llev2d
+
+! Set name
+@:set_name(atlas_field_to_array_logical)
+
+! Local lev2d
+llev2d = 'first'
+if (present(lev2d)) llev2d = lev2d
+if (.not.((trim(llev2d)=='first').or.(trim(llev2d)=='last'))) call mpl%abort('${subr}$','wrong lev2d')
+
+! Allocation
+allocate(array_int(size(array,1),size(array,2)))
+
+! Get integer array
+call field_to_array(afield,mpl,array_int,lev2d)
+
+! Convert integer to logical
+call convert_i2l(mpl,array_int,array)
+
+! Release memory
+deallocate(array_int)
+
+end subroutine atlas_field_to_array_logical
+
+#:for dtype in dtypes_ir
+!----------------------------------------------------------------------
+! Subroutine: atlas_field_from_array_${dtype}$
+!> Convert field to ATLAS field
+!----------------------------------------------------------------------
+subroutine atlas_field_from_array_${dtype}$(afield,mpl,array,lev2d)
+
+implicit none
+
+! Passed variables
+type(atlas_field),intent(inout) :: afield     !< ATLAS field
+type(mpl_type),intent(inout) :: mpl           !< MPI data
+${ftype[dtype]}$,intent(in) :: array(:,:)     !< Array
+character(len=*),intent(in),optional :: lev2d !< Level for 2D variables
+
+! Local variables
+integer :: nmga,nnodes,nl0,nl2d,il0
+${ftype[dtype]}$,pointer :: ptr(:,:)
+character(len=1024) :: llev2d
+
+! Set name
+@:set_name(atlas_field_from_array_${dtype}$)
+
+! Local lev2d
+llev2d = 'first'
+if (present(lev2d)) llev2d = lev2d
+if (.not.((trim(llev2d)=='first').or.(trim(llev2d)=='last'))) call mpl%abort('${subr}$','wrong lev2d')
+
+! Check kind
+if (afield%kind()/=${atlas_kind[dtype]}$) call mpl%abort('${subr}$','wrong kind for field '//afield%name())
+
+! Get ATLAS field size
+nmga = get_atlas_field_size(mpl,afield)
+
+! Get number of nodes and number of levels
+nnodes = size(array,1)
+nl0 = size(array,2)
+
+! Check number of nodes
+if (nmga/=nnodes) call mpl%abort('${subr}$','wrong number of nodes for field '//afield%name())
+
+! Copy data
+! For the 2D case (afield%levels()==1), the field is copied:
+! - at the first level of array if (lev2d=='first')
+! - at the last level of array if (lev2d=='last')
+call afield%data(ptr)
+ptr(:,:) = ${zero[dtype]}$
+if (afield%levels()==1) then
+   if (trim(llev2d)=='first') then
+      nl2d = 1
+   else if (trim(llev2d)=='last') then
+      nl2d = nl0
+   end if
+   if (nmga>0) ptr(1,1:nmga) = array(:,nl2d)
+else
+   if (nl0>afield%levels()) call mpl%abort('${subr}$','not enough levels in ATLAS field')
+   if (nmga>0) then
+      do il0=1,nl0
+         ptr(il0,1:nmga) = array(:,il0)
+      end do
+   end if
+end if
+
+end subroutine atlas_field_from_array_${dtype}$
+#:endfor
+
+!----------------------------------------------------------------------
+! Function: atlas_get_atlas_functionspace_size
+!> Get the local horizontal size of an ATLAS function space
+!----------------------------------------------------------------------
+function atlas_get_atlas_functionspace_size(mpl,afunctionspace) result(nmga)
+
+implicit none
+
+! Passed variables
+type(mpl_type),intent(inout) :: mpl                    !< MPI data
+type(atlas_functionspace),intent(in) :: afunctionspace !< ATLAS function space
+
+! Returned variable
+integer :: nmga
+
+! Local variables
+type(atlas_functionspace_nodecolumns) :: afunctionspace_nc
+type(atlas_functionspace_pointcloud) :: afunctionspace_pc
+type(atlas_functionspace_structuredcolumns) :: afunctionspace_sc
+
+! Set name
+@:set_name(atlas_get_atlas_functionspace_size)
+
+select case (afunctionspace%name())
+case ('NodeColumns')
+   ! Get NodeColumns function space
+   afunctionspace_nc = afunctionspace
+
+   ! Get number of nodes
+   nmga = afunctionspace_nc%nb_nodes()
+case ('PointCloud')
+   ! Get PointCloud function space
+   afunctionspace_pc = afunctionspace
+
+   ! Get number of points
+   nmga = afunctionspace_pc%size()
+case ('StructuredColumns')
+   ! Get StructuredColumns function space
+   afunctionspace_sc = afunctionspace
+
+   ! Get number of nodes
+   nmga = afunctionspace_sc%size()
+case default
+   call mpl%abort('${subr}$','wrong function space '//afunctionspace%name())
+end select
+
+! Release memory
+call afunctionspace_nc%final()
+call afunctionspace_pc%final()
+call afunctionspace_sc%final()
+
+end function atlas_get_atlas_functionspace_size
+
+!----------------------------------------------------------------------
+! Function: atlas_get_atlas_field_size
+!> Get the local horizontal size of an ATLAS field
+!----------------------------------------------------------------------
+function atlas_get_atlas_field_size(mpl,afield) result(nmga)
+
+implicit none
+
+! Passed variables
+type(mpl_type),intent(inout) :: mpl    !< MPI data
+type(atlas_field),intent(in) :: afield !< ATLAS field
+
+! Returned variable
+integer :: nmga
+
+! Local variables
+type(atlas_functionspace) :: afunctionspace
+
+! Set name
+@:set_name(atlas_get_atlas_field_size)
+
+! Get generic function space
+afunctionspace = afield%functionspace()
+
+! Get function space size
+nmga = get_atlas_functionspace_size(mpl,afunctionspace)
+
+! Release memory
+call afunctionspace%final()
+
+end function atlas_get_atlas_field_size
+
+end module tools_atlas
+

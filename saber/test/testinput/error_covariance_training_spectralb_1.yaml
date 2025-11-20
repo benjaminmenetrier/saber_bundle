@@ -1,0 +1,41 @@
+# The idea of this test is to read the MetOffice type covariance file
+# and write it as a saber spectral covariance file, changing the spectral resolution
+# and dumping the spectral covariances.
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_gaussian
+    N: 12
+  groups:
+  - variables: &vars
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    - mu
+    - unbalanced_pressure_levels_minus_one
+    levels: 70
+  partitioner: ectrans
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables: *vars
+background error:
+  covariance model: SABER
+  saber central block:
+    saber block name: spectral covariance
+    active variables: *vars
+    calibration:
+      read:
+        covariance_file: testdata/spectralcov.nc
+        umatrix_netcdf_names:
+        - PSI_inc_Uv_matrix
+        - CHI_inc_Uv_matrix
+        - MU_inc_Uv_matrix 
+        - aP_inc_Uv_matrix             
+      write:
+        covariance name: "specvertcov1"
+        mpi pattern: '%MPI%'
+        file path: testdata/error_covariance_training_spectralb_1/spectralsabercov_%MPI%.nc
+  saber outer blocks:
+  - saber block name: spectral to gauss
+    active variables: *vars
+test:
+  reference filename: testref/error_covariance_training_spectralb_1.ref

@@ -1,0 +1,77 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_lonlat
+    N: 10
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    levels: 2
+  - variables:
+    - air_pressure_at_surface
+    levels: 1
+  halo: 1
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables:
+  - air_horizontal_streamfunction
+  - air_horizontal_velocity_potential
+  - air_pressure_at_surface
+background error:
+  covariance model: SABER
+  ensemble:
+    members from template:
+      template:
+        date: 2010-01-01T12:00:00Z
+        filepath: testdata/randomization_bump_nicas_L10L2/_MPI_-_OMP__member_%mem%
+        state variables:
+        - air_horizontal_streamfunction
+        - air_horizontal_velocity_potential
+        - air_pressure_at_surface
+      pattern: '%mem%'
+      nmembers: 25
+      zero padding: 6
+  saber central block:
+    saber block name: BUMP_NICAS
+    calibration:
+      general:
+        testing: true
+      io:
+        data directory: testdata
+        files prefix: error_covariance_training_bump_hdiag_4/_MPI_-_OMP_
+      drivers:
+        compute covariance: true
+        compute correlation: true
+        compute localization: true
+        multivariate strategy: duplicated
+        compute moments: true
+        write diagnostics: true
+      model:
+        groups:
+        - group name: group 1
+          variables:
+          - air_horizontal_streamfunction
+          - air_pressure_at_surface
+        - group name: group 2
+          variables:
+          - air_horizontal_velocity_potential
+      sampling:
+        computation grid size: 500
+        diagnostic grid size: 250
+        distance classes: 10
+        angular sectors: 4
+        distance class width: 800.0e3
+        reduced levels: 2
+        interpolation type: c1
+      diagnostics:
+        target ensemble size: 25
+      output model files:
+      - parameter: loc_rh
+        file:
+          filepath: testdata/error_covariance_training_bump_hdiag_4/_MPI_-_OMP__loc_rh
+      - parameter: loc_rv
+        file:
+          filepath: testdata/error_covariance_training_bump_hdiag_4/_MPI_-_OMP__loc_rv
+test:
+  reference filename: testref/error_covariance_training_bump_hdiag_4.ref

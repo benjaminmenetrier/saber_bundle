@@ -1,0 +1,68 @@
+       Independent levels:  1[2]
+          Subset Sc0 size:              762
+          Domain area (% of Earth area): 0.100E+03%
+             Level   1 ~> 100.0%
+             Level   2 ~> 100.0%
+             Level   1 ~>  0.100E+01 vert. coord.
+             Level   2 ~>  0.200E+01 vert. coord.
+Norm of input parameter a - 1: 4.8608691474422692e+01
+Norm of input parameter a - 2: 6.6667913924447193e+00
+Norm of input parameter rh - 1: 2.5712517106742477e+08
+Norm of input parameter rh - 2: 1.4459210943799543e+08
+Norm of input parameter rv - 1: 1.9838818815890900e+02
+Norm of input parameter rv - 2: 1.9838818815970122e+01
+             Effective levels:   1   2 
+                   Requested distance between points (min/max/avg):  0.928E+03 km /  0.928E+03 km /  0.928E+03 km
+                   Regular sampling grid size:      360 points
+                   Nearest neighbor distance (min/max/avg):  0.381E+03 km /  0.103E+04 km /  0.886E+03 km
+                   Effective resolution (min/max/avg):  4.49 / 12.18 /  5.77
+                   Subgrid hash:   -435093158
+                Subgrid size:      360
+                   Requested distance between points (min/max/avg):  0.948E+03 km /  0.948E+03 km /  0.948E+03 km
+                   Regular sampling grid size:      360 points
+                   Nearest neighbor distance (min/max/avg):  0.381E+03 km /  0.103E+04 km /  0.886E+03 km
+                   Effective resolution (min/max/avg):  4.59 / 12.44 /  5.89
+                   Subgrid hash:   -435093158
+                Subgrid size:      360
+             nc1(  1) =                        360
+             nc1(  2) =                        360
+             ns =                              720
+             v%n_s =                             2
+             c%n_s[global] =                 19600
+             Effective levels:   1   2 
+                   Requested distance between points (min/max/avg):  0.522E+03 km /  0.522E+03 km /  0.522E+03 km
+                   Regular sampling grid size:     1440 points
+                   Nearest neighbor distance (min/max/avg):  0.157E+03 km /  0.604E+03 km /  0.540E+03 km
+                   Effective resolution (min/max/avg):  4.33 / 16.63 /  5.17
+                   Subgrid hash:   1163527547
+                Subgrid size:     1440
+                   Requested distance between points (min/max/avg):  0.533E+03 km /  0.533E+03 km /  0.533E+03 km
+                   Regular sampling grid size:     1288 points
+                   Nearest neighbor distance (min/max/avg):  0.168E+03 km /  0.633E+03 km /  0.564E+03 km
+                   Effective resolution (min/max/avg):  4.22 / 15.87 /  5.07
+                   Subgrid hash:   -680262426
+                Subgrid size:     1288
+             nc1(  1) =                       1440
+             nc1(  2) =                       1288
+             ns =                             2728
+             v%n_s =                             2
+             c%n_s[global] =                 38448
+    Full NICAS adjoint test result:                        T
+       Block NICAS adjoint test result:                    T
+          Interpolation adjoint test (horizontal) result:  T
+          Interpolation adjoint test (vertical) result:    T
+          Interpolation adjoint test (total) result:       T
+          Communication AB adjoint test result:            T
+          Communication AC adjoint test result:            T
+          Convolution / communication adjoint test result: T
+          Component NICAS adjoint test result:             T
+          Interpolation adjoint test (horizontal) result:  T
+          Interpolation adjoint test (vertical) result:    T
+          Interpolation adjoint test (total) result:       T
+          Communication AB adjoint test result:            T
+          Communication AC adjoint test result:            T
+          Convolution / communication adjoint test result: T
+          Component NICAS adjoint test result:             T
+             0.0 /    0.0:  1.0000000
+          Level   1:  0.0000000 -  1.0000000
+          Level   2:  0.0000000 -  0.6383747

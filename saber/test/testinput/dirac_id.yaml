@@ -1,0 +1,41 @@
+geometry:
+  function space: StructuredColumns
+  grid:
+    type: regular_gaussian
+    N: 10
+  groups:
+  - variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    levels: 2
+  no point on last task: true
+background:
+  date: 2010-01-01T12:00:00Z
+  state variables:
+  - air_horizontal_streamfunction
+  - air_horizontal_velocity_potential
+background error:
+  covariance model: SABER
+  randomization size: 50
+  adjoint test: true
+  square-root test: true
+  saber central block:
+    saber block name: ID
+dirac:
+  lon:
+  - 0.0
+  lat:
+  - -4.38894
+  level:
+  - 1
+  variable:
+  - air_horizontal_streamfunction
+output dirac:
+  mpi pattern: '%MPI%'
+  filepath: testdata/dirac_id/%MPI%_dirac_%id%
+output variance:
+  mpi pattern: '%MPI%'
+  filepath: testdata/dirac_id/%MPI%_variance
+  formats: [default, gmsh]
+test:
+  reference filename: testref/dirac_id.ref
