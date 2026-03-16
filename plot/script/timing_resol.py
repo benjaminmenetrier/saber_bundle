@@ -77,7 +77,7 @@ ax[1].set_xticklabels(xlbls)
 for t, y in zip(ax[1].get_xticklabels( ), va):
   t.set_y(y)
 ax[1].tick_params(axis='both', which='both', length=0)
-ax[1].legend(['Interpolation (application)','Interpolation (communication)','Convolution (application)','Convolution (communication)','Normalization'], loc='upper left') 
+ax[1].legend(['Interpolation (computation)','Interpolation (communication)','Convolution (computation)','Convolution (communication)','Normalization'], loc='upper left') 
 fig.subplots_adjust(hspace=0)
 filename = 'timing_resol'
 plt.savefig('../fig/' + filename + '.pdf', format='pdf', dpi=300)
